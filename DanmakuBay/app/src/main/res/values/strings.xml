@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">DanmakuBay</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_auth_login">AuthLoginActivity</string>
+
+    <string name="unauthorized">未授权</string>
+    <string name="login_success">登陆成功</string>
+</resources>

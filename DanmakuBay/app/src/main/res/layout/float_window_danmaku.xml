@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+        <com.brotherjing.simpledanmakuview.DanmakuView
+            android:layout_width="fill_parent"
+            android:layout_height="200dp"
+            android:id="@+id/danmakuFloating"/>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="200dp"
+            android:id="@+id/background"
+            android:background="#7fffffff"
+            android:visibility="gone"/>
+
+    </FrameLayout>
+
+    <ImageView
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_gravity="right"
+        android:src="@android:drawable/btn_minus"
+        android:id="@+id/ivRemoveFloatWindow"
+        android:visibility="invisible"/>
+
+    <!--<LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:singleLine="true"
+            android:imeOptions="actionSend"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:id="@+id/etSendDMFloat"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnFloatSendDM"
+            android:text="Send"/>
+        </LinearLayout>-->
+
+</LinearLayout>
