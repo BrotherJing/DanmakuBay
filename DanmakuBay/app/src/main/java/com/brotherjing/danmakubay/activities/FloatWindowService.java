@@ -10,10 +10,12 @@ import android.graphics.PixelFormat;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -22,6 +24,7 @@ import com.brotherjing.danmakubay.R;
 import com.brotherjing.simpledanmakuview.Danmaku;
 import com.brotherjing.simpledanmakuview.DanmakuView;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,7 +49,7 @@ public class FloatWindowService extends Service {
     "margin","They could end up with a 50-point winning margin.",
     "legend","The castle is steeped in history and legend.",
     "distribute","Students shouted slogans and distributed leaflets."};
-    private final int WORD_COUNT = 8;
+    private final static int WORD_COUNT = 8;
     private int curr_word=0;
 
     @Override
@@ -92,45 +95,68 @@ public class FloatWindowService extends Service {
     /**
      * check if the current activity is home. if not, hide the floating window.
      */
-    private final int HANDLE_CHECK_ACTIVITY = 1;
-    private Handler handler = new Handler(){
+    private final static  int HANDLE_CHECK_ACTIVITY = 1;
+    private final static class MyHandler extends Handler{
+
+        private WeakReference<FloatWindowService> reference;
+
+        public MyHandler(FloatWindowService service){
+            reference = new WeakReference<FloatWindowService>(service);
+        }
+
         @Override
         public void handleMessage(Message msg) {
+            if(reference.get()==null)return;
+            FloatWindowService service = reference.get();
             switch (msg.what) {
                 case HANDLE_CHECK_ACTIVITY:
-                if (isHome()) {
-                    if (!isAdded) {
-                        windowManager.addView(danmakuLayout, layoutParams);
-                        isAdded = true;
+                if (service.isHome()) {
+                    if (!service.isAdded) {
+                        service.windowManager.addView(service.danmakuLayout, service.layoutParams);
+                        service.isAdded = true;
                     }
-                    danmakuView.addDanmaku(new Danmaku(wordlist[curr_word], false));
-                    curr_word=(++curr_word)%WORD_COUNT;
+                    service.danmakuView.addDanmaku(new Danmaku(service.wordlist[service.curr_word], false));
+                    service.curr_word=(++service.curr_word)%WORD_COUNT;
                 } else {
-                    if (isAdded) {
-                        windowManager.removeView(danmakuLayout);
-                        isAdded = false;
+                    if (service.isAdded) {
+                        service.windowManager.removeView(service.danmakuLayout);
+                        service.isAdded = false;
                     }
                 }
                 break;
             }
-            handler.sendEmptyMessageDelayed(HANDLE_CHECK_ACTIVITY,500);
+            sendEmptyMessageDelayed(HANDLE_CHECK_ACTIVITY, 500);
         }
-    };
+    }
+    private final MyHandler handler = new MyHandler(this);
 
     private void initView(){
         LayoutInflater inflater = LayoutInflater.from(getApplication());
 
         //the floating window
+        /*danmakuLayout = new LinearLayout(this,null,0);
+        danmakuLayout.setOrientation(LinearLayout.VERTICAL);
+        danmakuView = new DanmakuView(this);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        danmakuLayout.addView(danmakuView,lp);
+
+        ivRemove = new ImageView(this);
+        ivRemove.setImageResource(android.R.drawable.btn_minus);
+        LinearLayout.LayoutParams lp1 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        danmakuLayout.addView(ivRemove,lp1);*/
+
+        //background = new View(this);
         danmakuLayout = (LinearLayout)inflater.inflate(R.layout.float_window_danmaku, null);
         danmakuView = (DanmakuView)danmakuLayout.findViewById(R.id.danmakuFloating);
+        danmakuView.setMode(DanmakuView.MODE_NO_OVERDRAW);
         ivRemove = (ImageView)danmakuLayout.findViewById(R.id.ivRemoveFloatWindow);
-        background = (View)danmakuLayout.findViewById(R.id.background);
+        background = danmakuLayout.findViewById(R.id.background);
     }
 
     private void initLayout(){
 
         layoutParams = new WindowManager.LayoutParams();
-        layoutParams.type = WindowManager.LayoutParams.TYPE_PHONE;
+        layoutParams.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
         layoutParams.format = PixelFormat.RGBA_8888;
         layoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE| WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
         layoutParams.gravity = Gravity.CENTER_VERTICAL;
@@ -139,7 +165,7 @@ public class FloatWindowService extends Service {
         layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
         layoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
 
-        windowManager.addView(danmakuLayout,layoutParams);
+        windowManager.addView(danmakuLayout, layoutParams);
         danmakuLayout.measure(View.MeasureSpec.makeMeasureSpec(0,
                 View.MeasureSpec.UNSPECIFIED), View.MeasureSpec
                 .makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
@@ -159,7 +185,7 @@ public class FloatWindowService extends Service {
                         startY = (int)event.getRawY();
                         paramx = layoutParams.x;
                         paramy = layoutParams.y;
-                        //Log.i("yj", "down,x="+startX+" y="+startY);
+                        //Log.i("yj", "down,x=" + startX + " y=" + startY);
                         background.setVisibility(View.VISIBLE);
                         break;
                     case MotionEvent.ACTION_MOVE:
@@ -181,7 +207,7 @@ public class FloatWindowService extends Service {
                                 ivRemove.setVisibility(View.INVISIBLE);
                         }
                 }
-                return false;
+                return true;
             }
         });
 
@@ -207,7 +233,6 @@ public class FloatWindowService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        handler = null;
     }
 }
 

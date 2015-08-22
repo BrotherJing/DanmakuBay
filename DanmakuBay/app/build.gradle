@@ -22,7 +22,7 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:22.1.1'
-    compile 'com.brotherjing:danmakuview:1.0.0'
+    compile 'com.brotherjing:danmakuview:1.0.1'
     compile 'com.google.code.gson:gson:2.3'
 
 }

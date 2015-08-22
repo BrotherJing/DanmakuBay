@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="Encoding" native2AsciiForPropertiesFiles="true" defaultCharsetForPropertiesFiles="UTF-8">
-    <file url="file://$PROJECT_DIR$/app/src/main/java/com/brotherjing/danmakubay/activities/FloatWindowService.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/app/src/main/res/layout/float_window_danmaku.xml" charset="GBK" />
-    <file url="PROJECT" charset="UTF-8" />
-  </component>
-</project>
