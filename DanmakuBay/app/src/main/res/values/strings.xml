@@ -9,8 +9,8 @@
     <string name="login_success">登陆成功</string>
     <string name="title_activity_launch">LaunchActivity</string>
 
-    <string name="open_window">打开浮窗</string>
-    <string name="close_window">关闭浮窗</string>
+    <string name="open_window">打开弹幕</string>
+    <string name="close_window">关闭弹幕</string>
     <string name="open_find_window">打开查词工具</string>
     <string name="close_find_window">关闭查词工具</string>
     <string name="set_danmaku">弹幕设定</string>
@@ -18,8 +18,8 @@
     <string name="word_list">单词列表</string>
     <string name="log_out">退出登录</string>
 
-    <string name="window_opened">浮窗已打开</string>
-    <string name="window_closed">浮窗已关闭</string>
+    <string name="window_opened">弹幕已打开</string>
+    <string name="window_closed">弹幕已关闭</string>
     <string name="title_activity_add_word">AddWordActivity</string>
 
     <string name="hello_world">Hello world!</string>

@@ -1,14 +1,17 @@
 package com.brotherjing.danmakubay.activities;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.brotherjing.danmakubay.R;
+import com.brotherjing.danmakubay.utils.ViewUtil;
 import com.brotherjing.danmakubay.utils.WordDBManager;
 import com.brotherjing.danmakubay.utils.views.UniversalAdapter;
 import com.brotherjing.danmakubay.utils.views.UniversalViewHolder;
@@ -27,6 +30,8 @@ public class WordListActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_word_list);
+        initActionBar();
+
         lv = (ListView)findViewById(R.id.lv);
         wordDBManager = new WordDBManager(this);
         wordList = wordDBManager.getList();
@@ -41,6 +46,13 @@ public class WordListActivity extends Activity {
                 tvDesc.setText(item.getDefinition());
             }
         });
+    }
+
+    private void initActionBar(){
+        ActionBar actionBar = getActionBar();
+        ViewUtil.customizeActionBar(actionBar, R.layout.actionbar_message_index);
+        View view = actionBar.getCustomView();
+        ((TextView)view.findViewById(R.id.textViewTitle)).setText(getResources().getText(R.string.word_list));
     }
 
 }

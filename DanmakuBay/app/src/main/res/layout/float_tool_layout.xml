@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:src="@drawable/add_button"
+        android:id="@+id/iv_expand"/>
+
+    <LinearLayout
+        android:id="@+id/ll_main"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="center_vertical"
+        android:visibility="gone">
+
+        <EditText
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/et_find_word"
+            android:imeOptions="actionSearch"
+            android:textColor="@android:color/black"
+            android:padding="2dp"
+            android:background="@drawable/btn_round_rect_border_normal"/>
+
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:background="@color/half_trans_white"
+            android:id="@+id/tv_word_desc"
+            android:padding="4dp"/>
+
+        <TextView
+            android:id="@+id/btn_add_word_float"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/btn_round_rect"
+            android:textColor="@android:color/white"
+            android:text="@string/add_word"
+            android:gravity="center"
+            android:padding="4dp"/>
+
+    </LinearLayout>
+
+</LinearLayout>

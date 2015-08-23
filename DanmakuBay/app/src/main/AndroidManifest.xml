@@ -40,9 +40,9 @@
         </activity>
 
         <service
-            android:name=".activities.FloatWindowService"
+            android:name=".services.FloatWindowService"
             android:enabled="true"
-            android:exported="true" >
+            android:exported="false" >
         </service>
 
         <activity
@@ -63,6 +63,12 @@
             android:name=".activities.WordListActivity"
             android:label="@string/title_activity_word_list" >
         </activity>
+
+        <service
+            android:name=".services.FloatToolService"
+            android:enabled="true"
+            android:exported="false" >
+        </service>
     </application>
 
 </manifest>

@@ -1,4 +1,4 @@
-package com.brotherjing.danmakubay.activities;
+package com.brotherjing.danmakubay.services;
 
 import android.app.ActivityManager;
 import android.app.Service;
@@ -10,12 +10,10 @@ import android.graphics.PixelFormat;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -110,7 +108,8 @@ public class FloatWindowService extends Service {
     /**
      * check if the current activity is home. if not, hide the floating window.
      */
-    private final static  int HANDLE_CHECK_ACTIVITY = 1;
+    private final static int HANDLE_CHECK_ACTIVITY = 1;
+    private final static int HANDLE_FINISH = 2;
     private final static class MyHandler extends Handler{
 
         private WeakReference<FloatWindowService> reference;
@@ -138,9 +137,11 @@ public class FloatWindowService extends Service {
                         service.isAdded = false;
                     }
                 }
+                sendEmptyMessageDelayed(HANDLE_CHECK_ACTIVITY, 500);
                 break;
+                case HANDLE_FINISH:
+                    break;
             }
-            sendEmptyMessageDelayed(HANDLE_CHECK_ACTIVITY, 500);
         }
     }
     private final MyHandler handler = new MyHandler(this);
@@ -233,6 +234,8 @@ public class FloatWindowService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        handler.removeMessages(HANDLE_CHECK_ACTIVITY);
+        handler.sendEmptyMessage(HANDLE_FINISH);
     }
 }
 
