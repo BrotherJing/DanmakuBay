@@ -2,9 +2,11 @@
 <resources>
 
     <color name="app_color">#209E85</color>
-    <color name="app_color_shallow">#ff7d9e97</color>
+    <color name="app_color_dark">#ff186c59</color>
+    <color name="app_color_shallow">#ff24bea5</color>
 
-    <color name="half_transparent">#22000000</color>
+    <color name="half_transparent">#66000000</color>
+    <color name="half_transparent_light">#22000000</color>
     <color name="half_trans_white">#22ffffff</color>
     <color name="transparent">#00000000</color>
 

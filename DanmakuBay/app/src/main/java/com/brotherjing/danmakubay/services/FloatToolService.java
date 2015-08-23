@@ -5,7 +5,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.PixelFormat;
+import android.os.AsyncTask;
 import android.os.IBinder;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -13,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -21,7 +26,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.brotherjing.danmakubay.R;
+import com.brotherjing.danmakubay.utils.Result;
+import com.brotherjing.danmakubay.utils.WordDBManager;
+import com.brotherjing.danmakubay.utils.beans.WordBean;
+import com.brotherjing.danmakubay.utils.providers.ShanbayProvider;
 import com.brotherjing.simpledanmakuview.DanmakuView;
+import com.greendao.dao.Word;
+
+import java.nio.channels.spi.SelectorProvider;
 
 public class FloatToolService extends Service {
 
@@ -34,6 +46,11 @@ public class FloatToolService extends Service {
     WindowManager.LayoutParams layoutParams;
     WindowManager windowManager;
 
+    ShanbayProvider provider;
+    WordDBManager wordDBManager;
+
+    WordBean searchResult;
+
     boolean isAdded;
 
     public FloatToolService() {
@@ -44,6 +61,8 @@ public class FloatToolService extends Service {
     public void onCreate() {
         super.onCreate();
         windowManager = (WindowManager)getApplication().getSystemService(getApplication().WINDOW_SERVICE);
+        provider = new ShanbayProvider();
+        wordDBManager = new WordDBManager(this);
     }
 
     @Override
@@ -94,7 +113,7 @@ public class FloatToolService extends Service {
 
     private void initListener(){
 
-        View.OnKeyListener li = new View.OnKeyListener() {
+        et.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if(keyCode==KeyEvent.KEYCODE_BACK) {
@@ -106,14 +125,53 @@ public class FloatToolService extends Service {
                 }
                 return false;
             }
-        };
-        /*
-        floatLayout.setOnKeyListener(li);
-        mainLayout.setOnKeyListener(li);
-        ivExpand.setOnKeyListener(li);
-        tvAdd.setOnKeyListener(li);
-        tvDesc.setOnKeyListener(li);*/
-        et.setOnKeyListener(li);
+        });
+
+        et.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(TextUtils.isEmpty(s)){
+                    tvDesc.setVisibility(View.GONE);
+                    tvAdd.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        et.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_NULL) {
+                    if (TextUtils.isEmpty(et.getText())) return true;
+                    tvDesc.setVisibility(View.VISIBLE);
+                    tvAdd.setVisibility(View.VISIBLE);
+                    new SearchWordTask().execute(et.getText().toString());
+                }
+                return true;
+            }
+        });
+
+        tvAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(searchResult==null)return;
+                Word word = provider.from(searchResult);
+                if(wordDBManager.addWord(word)){
+                    Toast.makeText(FloatToolService.this,R.string.add_success,Toast.LENGTH_SHORT).show();
+                }else {
+                    Toast.makeText(FloatToolService.this,R.string.add_fail,Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
         /*et.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -181,6 +239,33 @@ public class FloatToolService extends Service {
             windowManager.removeView(floatLayout);
         }catch (Exception ex){
             ex.printStackTrace();
+        }
+    }
+
+    private class SearchWordTask extends AsyncTask<String,Void,Result> {
+        WordBean wordBean = null;
+        @Override
+        protected Result doInBackground(String... params) {
+            try {
+                wordBean = provider.getWord(params[0]);
+                if(wordBean!=null)
+                    return new Result(true, "");
+            }catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            return new Result(false, "");
+        }
+
+        @Override
+        protected void onPostExecute(Result result) {
+            super.onPostExecute(result);
+            if(result.isSuccess()){
+                tvDesc.setVisibility(View.VISIBLE);
+                tvDesc.setText(wordBean.getPronunciation() + "\n" + wordBean.getDefinition());
+                tvAdd.setVisibility(View.VISIBLE);
+                searchResult = wordBean;
+            }
+            else Toast.makeText(FloatToolService.this,R.string.get_fail,Toast.LENGTH_SHORT).show();
         }
     }
 }

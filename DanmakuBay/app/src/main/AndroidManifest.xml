@@ -69,6 +69,11 @@
             android:enabled="true"
             android:exported="false" >
         </service>
+
+        <activity
+            android:name=".activities.DanmakuSettingActivity"
+            android:label="@string/title_activity_danmaku_setting" >
+        </activity>
     </application>
 
 </manifest>

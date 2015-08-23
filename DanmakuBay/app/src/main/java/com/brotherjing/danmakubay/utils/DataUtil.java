@@ -28,6 +28,7 @@ public class DataUtil {
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
+
     }
 
     public static String getString(String spfName, String key) {
@@ -40,6 +41,10 @@ public class DataUtil {
 
     public static long getLong(String spfName, String key, long defValue) {
         return getSharedPreferences(spfName).getLong(key, defValue);
+    }
+
+    public static int getInt(String spfName, String key, int defValue) {
+        return getSharedPreferences(spfName).getInt(key, defValue);
     }
 
     public static boolean getBoolean(String spfName, String key, boolean defVal) {
@@ -63,6 +68,10 @@ public class DataUtil {
 
     public static void putLongForce(String spfName, String key, long value) {
         getSharedPreferences(spfName).edit().putLong(key, value).commit();
+    }
+
+    public static void putInt(String spfName,String key,int value){
+        getSharedPreferences(spfName).edit().putInt(key, value).apply();
     }
 
     public static void putBoolean(String spfName, String key, boolean value) {

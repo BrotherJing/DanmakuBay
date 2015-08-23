@@ -111,7 +111,7 @@ public class AddWordActivity extends Activity {
                 btnAdd.setVisibility(View.VISIBLE);
                 searchResult = wordBean;
             }
-            else Toast.makeText(AddWordActivity.this,"fail",Toast.LENGTH_SHORT).show();
+            else Toast.makeText(AddWordActivity.this,R.string.get_fail,Toast.LENGTH_SHORT).show();
         }
     }
 

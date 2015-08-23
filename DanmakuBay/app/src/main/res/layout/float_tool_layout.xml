@@ -29,7 +29,9 @@
         <TextView
             android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:background="@color/half_trans_white"
+            android:background="@color/half_transparent"
+            android:textColor="@android:color/white"
+            android:visibility="gone"
             android:id="@+id/tv_word_desc"
             android:padding="4dp"/>
 
@@ -41,6 +43,7 @@
             android:textColor="@android:color/white"
             android:text="@string/add_word"
             android:gravity="center"
+            android:visibility="gone"
             android:padding="4dp"/>
 
     </LinearLayout>

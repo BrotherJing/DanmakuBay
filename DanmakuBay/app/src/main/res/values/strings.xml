@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">DanmakuBay</string>
 
-    <string name="app_title">弹幕背</string>
+    <string name="app_title">弹幕贝</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_auth_login">AuthLoginActivity</string>
 
@@ -20,9 +20,23 @@
 
     <string name="window_opened">弹幕已打开</string>
     <string name="window_closed">弹幕已关闭</string>
+    <string name="tool_opened">查词工具已打开</string>
+    <string name="tool_closed">查词工具已关闭</string>
     <string name="title_activity_add_word">AddWordActivity</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="search">搜索</string>
     <string name="title_activity_word_list">WordListActivity</string>
+
+    <string name="add_success">添加成功</string>
+    <string name="add_fail">添加失败</string>
+    <string name="get_fail">获取失败</string>
+    <string name="title_activity_danmaku_setting">DanmakuSettingActivity</string>
+
+    <string name="danmaku_speed">弹幕速度</string>
+    <string name="display_area">显示范围</string>
+    <string name="home_only">仅桌面</string>
+    <string name="all_app">所有应用</string>
+    <string name="show_bg">显示背景</string>
+    <string name="save">保存</string>
 </resources>

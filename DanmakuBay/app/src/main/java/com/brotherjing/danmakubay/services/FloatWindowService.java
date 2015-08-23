@@ -19,6 +19,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.brotherjing.danmakubay.R;
+import com.brotherjing.danmakubay.api.API_SPF;
+import com.brotherjing.danmakubay.utils.DataUtil;
 import com.brotherjing.danmakubay.utils.WordDBManager;
 import com.brotherjing.simpledanmakuview.Danmaku;
 import com.brotherjing.simpledanmakuview.DanmakuView;
@@ -50,6 +52,9 @@ public class FloatWindowService extends Service {
     private List<Word> wordlist;
     private int word_cnt, current;
 
+    private int speed;
+    private boolean show_bg,all_app;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -61,8 +66,8 @@ public class FloatWindowService extends Service {
 
         if(isAdded)return super.onStartCommand(intent, flags, startId);
 
-        initData();
         initView();
+        initData();
         initLayout();
         initListener();
 
@@ -77,6 +82,13 @@ public class FloatWindowService extends Service {
         wordlist = wordDBManager.getList();
         word_cnt = wordlist.size();
         current = 0;
+
+        speed = DataUtil.getInt(API_SPF.SPF_SETTING, API_SPF.ITEM_DANMAKU_SPEED, 50);
+        show_bg = DataUtil.getBoolean(API_SPF.SPF_SETTING, API_SPF.ITEM_SHOW_BG, true);
+        all_app = DataUtil.getBoolean(API_SPF.SPF_SETTING, API_SPF.ITEM_DISPLAY_AREA,false);
+
+        danmakuView.setMSPF(20+(speed-50)/10);
+        if(!show_bg)background.setVisibility(View.GONE);
     }
 
     /**
@@ -124,12 +136,13 @@ public class FloatWindowService extends Service {
             FloatWindowService service = reference.get();
             switch (msg.what) {
                 case HANDLE_CHECK_ACTIVITY:
-                if (service.isHome()) {
+                if (service.all_app||service.isHome()) {
                     if (!service.isAdded) {
                         service.windowManager.addView(service.danmakuLayout, service.layoutParams);
                         service.isAdded = true;
                     }
-                    service.danmakuView.addDanmaku(new Danmaku(service.wordlist.get(service.current).getWord(), false));
+                    Danmaku danmaku = new Danmaku(service.wordlist.get(service.current).getWord());
+                    service.danmakuView.addDanmaku(danmaku);
                     service.current = (service.current+1)%service.word_cnt;
                 } else {
                     if (service.isAdded) {
@@ -188,7 +201,7 @@ public class FloatWindowService extends Service {
                         paramx = layoutParams.x;
                         paramy = layoutParams.y;
                         //Log.i("yj", "down,x=" + startX + " y=" + startY);
-                        background.setVisibility(View.VISIBLE);
+                        //background.setVisibility(View.VISIBLE);
                         break;
                     case MotionEvent.ACTION_MOVE:
                         int dx = (int)event.getRawX()-startX;
@@ -199,15 +212,17 @@ public class FloatWindowService extends Service {
                         //Log.i("yj", "move,dx=" + dx + " dy=" + dy);
                         break;
                     case MotionEvent.ACTION_UP:
-                        background.setVisibility(View.GONE);
+                        //background.setVisibility(View.GONE);
                         int mx = (int)event.getRawX()-startX;
                         int my = (int)event.getRawY()-startY;
-                        if((mx<10&&mx>-10)&&(my<10&&my>-10)){
+                        /*if((mx<10&&mx>-10)&&(my<10&&my>-10)){
                             if(ivRemove.getVisibility()== View.INVISIBLE)
                                 ivRemove.setVisibility(View.VISIBLE);
                             else
                                 ivRemove.setVisibility(View.INVISIBLE);
-                        }
+                        }*/
+                        break;
+                    default:break;
                 }
                 return true;
             }
@@ -234,6 +249,11 @@ public class FloatWindowService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        try {
+            windowManager.removeView(danmakuLayout);
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
         handler.removeMessages(HANDLE_CHECK_ACTIVITY);
         handler.sendEmptyMessage(HANDLE_FINISH);
     }

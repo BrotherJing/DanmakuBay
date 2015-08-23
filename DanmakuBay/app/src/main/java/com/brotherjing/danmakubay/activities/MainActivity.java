@@ -105,6 +105,13 @@ public class MainActivity extends Activity {
                 break;
             }
         }
+        for(int i=0;i<serviceInfoList.size();++i){
+            if(serviceInfoList.get(i).service.getClassName().equals("com.brotherjing.danmakubay.services.FloatToolService")){
+                flag|=FLOAT_TOOL_OPENED;
+                tvOpenFindWindow.setText(R.string.close_find_window);
+                break;
+            }
+        }
     }
 
     private void refreshView(){
@@ -146,6 +153,12 @@ public class MainActivity extends Activity {
                 }
             }
         });
+        tvSetDanmaku.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this,DanmakuSettingActivity.class));
+            }
+        });
         tvAddWord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -164,13 +177,13 @@ public class MainActivity extends Activity {
                 if((flag&FLOAT_TOOL_OPENED)==0) {
                     Intent intent = new Intent(MainActivity.this, FloatToolService.class);
                     startService(intent);
-                    Toast.makeText(MainActivity.this, R.string.window_opened, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, R.string.tool_opened, Toast.LENGTH_SHORT).show();
                     tvOpenFindWindow.setText(R.string.close_find_window);
                     flag|=FLOAT_TOOL_OPENED;
                 }else{
                     Intent intent = new Intent(MainActivity.this, FloatToolService.class);
                     stopService(intent);
-                    Toast.makeText(MainActivity.this, R.string.window_closed, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, R.string.tool_closed, Toast.LENGTH_SHORT).show();
                     tvOpenFindWindow.setText(R.string.open_find_window);
                     flag&=~FLOAT_TOOL_OPENED;
                 }
