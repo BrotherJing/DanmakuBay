@@ -24,5 +24,14 @@ dependencies {
     compile 'com.android.support:appcompat-v7:22.1.1'
     compile 'com.brotherjing:danmakuview:1.0.1'
     compile 'com.google.code.gson:gson:2.3'
+    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.3'
+
+    compile('de.greenrobot:greendao:2.0.0') {
+        exclude module: 'support-v4'
+        exclude module: 'junit'
+        exclude module: 'android-test'
+        exclude module: 'annotations'
+        exclude module: 'android'
+    }
 
 }

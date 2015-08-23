@@ -17,7 +17,6 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.FLASHLIGHT" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-
     <uses-permission android:name="android.permission.GET_TASKS" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.REORDER_TASKS" />
@@ -38,11 +37,6 @@
         <activity
             android:name=".activities.AuthLoginActivity"
             android:label="@string/title_activity_auth_login" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <service
@@ -51,6 +45,24 @@
             android:exported="true" >
         </service>
 
+        <activity
+            android:name=".activities.LaunchActivity"
+            android:label="@string/app_title"
+            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activities.AddWordActivity"
+            android:label="@string/title_activity_add_word" >
+        </activity>
+        <activity
+            android:name=".activities.WordListActivity"
+            android:label="@string/title_activity_word_list" >
+        </activity>
     </application>
 
 </manifest>

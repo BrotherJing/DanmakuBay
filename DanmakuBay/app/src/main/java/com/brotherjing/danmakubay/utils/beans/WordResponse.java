@@ -8,13 +8,13 @@ import com.google.gson.annotations.SerializedName;
 public class WordResponse extends ShanbayResponse {
 
     @SerializedName("data")
-    Word word;
+    WordBean wordBean;
 
-    public Word getWord() {
-        return word;
+    public WordBean getWordBean() {
+        return wordBean;
     }
 
-    public void setWord(Word word) {
-        this.word = word;
+    public void setWordBean(WordBean wordBean) {
+        this.wordBean = wordBean;
     }
 }

@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Created by Brotherjing on 2015/8/15.
  */
-public class Word {
+public class WordBean {
     @SerializedName("definition")
     String definition;
     @SerializedName("learning_id")
@@ -17,7 +17,7 @@ public class Word {
     @SerializedName("id")
     long id;
 
-    public Word() {
+    public WordBean() {
     }
 
     public String getDefinition() {

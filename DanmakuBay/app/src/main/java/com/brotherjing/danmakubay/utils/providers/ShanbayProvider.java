@@ -6,9 +6,10 @@ import com.brotherjing.danmakubay.utils.CrossyHttpClient;
 import com.brotherjing.danmakubay.utils.DataUtil;
 import com.brotherjing.danmakubay.utils.beans.ShanbayResponse;
 import com.brotherjing.danmakubay.utils.beans.UserInfo;
-import com.brotherjing.danmakubay.utils.beans.Word;
+import com.brotherjing.danmakubay.utils.beans.WordBean;
 import com.brotherjing.danmakubay.utils.beans.WordResponse;
 import com.google.gson.Gson;
+import com.greendao.dao.Word;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -21,14 +22,14 @@ import java.util.List;
  */
 public class ShanbayProvider {
 
-    public Word getWord(String word){
+    public WordBean getWord(String word){
         WordResponse response = CrossyHttpClient.getBean(API_URL.URL_SEARCH_WORD+word+"&"+
                 API_URL.SUFFIX_ACCESS_TOKEN+DataUtil.getString(API_SPF.SPF_TOKEN,API_SPF.ITEM_ACCESS_TOKEN),
                 DataUtil.getString(API_SPF.SPF_TOKEN,API_SPF.ITEM_COOKIES),WordResponse.class);
         if(response.getStatus_code()!=0){
             return null;
         }
-        return response.getWord();
+        return response.getWordBean();
     }
 
     public UserInfo getUserInfo(){
@@ -47,6 +48,15 @@ public class ShanbayProvider {
         ShanbayResponse response = new Gson().fromJson(result,ShanbayResponse.class);
         if(response.getStatus_code()!=0)return false;
         return true;
+    }
+
+    public Word from(WordBean wordBean){
+        Word word = new Word();
+        word.setWord(wordBean.getContent());
+        word.setShanbay_id(wordBean.getId());
+        word.setDefinition(wordBean.getDefinition());
+        word.setPronounce(wordBean.getPronunciation());
+        return word;
     }
 
 }

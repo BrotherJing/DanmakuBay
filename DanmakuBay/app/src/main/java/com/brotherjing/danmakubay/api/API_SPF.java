@@ -8,5 +8,6 @@ public interface API_SPF {
     String SPF_TOKEN = "spf_token";
     String ITEM_ACCESS_TOKEN = "access_token";
     String ITEM_COOKIES = "cookies";
+    String ITEM_USERINFO = "userinfo";
 
 }

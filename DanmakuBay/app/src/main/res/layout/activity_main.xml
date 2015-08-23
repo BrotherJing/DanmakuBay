@@ -4,15 +4,95 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <EditText
+    <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/et_word"/>
+        android:orientation="vertical"
+        android:background="@color/app_color"
+        android:padding="20dp">
 
-    <Button
+        <ImageView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/iv_avatar"
+            android:scaleType="fitCenter"
+            android:layout_marginBottom="6dp"/>
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:textColor="@android:color/white"
+            android:id="@+id/tv_username"
+            android:textSize="16sp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Search"
-        android:id="@+id/btn_search"/>
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:id="@+id/tv_open_window"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/open_window"
+            style="@style/list_item_main"/>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:background="@color/app_color_shallow"/>
+
+        <TextView
+            android:id="@+id/tv_open_find_window"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/open_find_window"
+            style="@style/list_item_main"/>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:background="@color/app_color_shallow"/>
+
+        <TextView
+            android:id="@+id/tv_set_danmaku"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/set_danmaku"
+            style="@style/list_item_main"/>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:background="@color/app_color_shallow"
+            android:layout_marginBottom="40dp"/>
+
+        <TextView
+            android:id="@+id/tv_add_word"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/add_word"
+            style="@style/list_item_main"/>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:background="@color/app_color_shallow"/>
+
+        <TextView
+            android:id="@+id/tv_word_list"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/word_list"
+            style="@style/list_item_main"/>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:background="@color/app_color_shallow"/>
+    </LinearLayout>
 
 </LinearLayout>

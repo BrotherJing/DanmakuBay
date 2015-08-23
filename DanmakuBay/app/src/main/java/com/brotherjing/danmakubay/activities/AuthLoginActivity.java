@@ -13,15 +13,17 @@ import android.webkit.CookieManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.brotherjing.danmakubay.api.API_SPF;
 import com.brotherjing.danmakubay.api.API_URL;
 import com.brotherjing.danmakubay.R;
 import com.brotherjing.danmakubay.utils.DataUtil;
+import com.brotherjing.danmakubay.utils.ViewUtil;
 
 
-public class AuthLoginActivity extends ActionBarActivity {
+public class AuthLoginActivity extends Activity {
 
     private WebView webView;
     private String login_url;
@@ -35,6 +37,8 @@ public class AuthLoginActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth_login);
         webView = (WebView)findViewById(R.id.webview_auth_login);
+
+        initActionBar();
 
         login_once = false;
 
@@ -51,6 +55,13 @@ public class AuthLoginActivity extends ActionBarActivity {
         login_url = String.format(API_URL.URL_AUTH, API_URL.APP_KEY, API_URL.URL_CALLBACK);
         //Log.i("yj", login_url);
         webView.loadUrl(login_url);
+    }
+
+    private void initActionBar(){
+        ActionBar actionBar = getActionBar();
+        ViewUtil.customizeActionBar(actionBar, R.layout.actionbar_message_index);
+        View view = actionBar.getCustomView();
+        ((TextView)view.findViewById(R.id.textViewTitle)).setText(getResources().getText(R.string.app_title));
     }
 
     private <T extends View>T f(int resId){

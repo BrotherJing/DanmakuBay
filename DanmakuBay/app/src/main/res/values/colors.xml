@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="app_color">#209E85</color>
+    <color name="app_color_shallow">#ff7d9e97</color>
+
+    <color name="half_transparent">#22000000</color>
+    <color name="half_trans_white">#22ffffff</color>
+    <color name="transparent">#00000000</color>
+
+    <color name="grey">#585858</color>
+    <color name="light_grey">#d8d8d8</color>
+    <color name="background_grey_light">#eeeeee</color>
+</resources>

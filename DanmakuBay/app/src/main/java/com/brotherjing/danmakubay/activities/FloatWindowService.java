@@ -21,8 +21,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.brotherjing.danmakubay.R;
+import com.brotherjing.danmakubay.utils.WordDBManager;
 import com.brotherjing.simpledanmakuview.Danmaku;
 import com.brotherjing.simpledanmakuview.DanmakuView;
+import com.greendao.dao.Word;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -45,18 +47,23 @@ public class FloatWindowService extends Service {
     private ActivityManager activityManager;
     private List<String> packageNames;
 
-    private String[] wordlist = {"tongue","I walked over to the mirror and stuck my tongue out.",
-    "margin","They could end up with a 50-point winning margin.",
-    "legend","The castle is steeped in history and legend.",
-    "distribute","Students shouted slogans and distributed leaflets."};
-    private final static int WORD_COUNT = 8;
-    private int curr_word=0;
+    private WordDBManager wordDBManager;
+
+    private List<Word> wordlist;
+    private int word_cnt, current;
 
     @Override
     public void onCreate() {
         super.onCreate();
         windowManager = (WindowManager)getApplication().getSystemService(getApplication().WINDOW_SERVICE);
+    }
 
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+
+        if(isAdded)return super.onStartCommand(intent, flags, startId);
+
+        initData();
         initView();
         initLayout();
         initListener();
@@ -64,6 +71,14 @@ public class FloatWindowService extends Service {
         //only show floating window in HOME activity
         packageNames = getNames();
         handler.sendEmptyMessageDelayed(HANDLE_CHECK_ACTIVITY, 1000);
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+    private void initData(){
+        wordDBManager = new WordDBManager(this);
+        wordlist = wordDBManager.getList();
+        word_cnt = wordlist.size();
+        current = 0;
     }
 
     /**
@@ -115,8 +130,8 @@ public class FloatWindowService extends Service {
                         service.windowManager.addView(service.danmakuLayout, service.layoutParams);
                         service.isAdded = true;
                     }
-                    service.danmakuView.addDanmaku(new Danmaku(service.wordlist[service.curr_word], false));
-                    service.curr_word=(++service.curr_word)%WORD_COUNT;
+                    service.danmakuView.addDanmaku(new Danmaku(service.wordlist.get(service.current).getWord(), false));
+                    service.current = (service.current+1)%service.word_cnt;
                 } else {
                     if (service.isAdded) {
                         service.windowManager.removeView(service.danmakuLayout);
@@ -132,20 +147,6 @@ public class FloatWindowService extends Service {
 
     private void initView(){
         LayoutInflater inflater = LayoutInflater.from(getApplication());
-
-        //the floating window
-        /*danmakuLayout = new LinearLayout(this,null,0);
-        danmakuLayout.setOrientation(LinearLayout.VERTICAL);
-        danmakuView = new DanmakuView(this);
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        danmakuLayout.addView(danmakuView,lp);
-
-        ivRemove = new ImageView(this);
-        ivRemove.setImageResource(android.R.drawable.btn_minus);
-        LinearLayout.LayoutParams lp1 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        danmakuLayout.addView(ivRemove,lp1);*/
-
-        //background = new View(this);
         danmakuLayout = (LinearLayout)inflater.inflate(R.layout.float_window_danmaku, null);
         danmakuView = (DanmakuView)danmakuLayout.findViewById(R.id.danmakuFloating);
         danmakuView.setMode(DanmakuView.MODE_NO_OVERDRAW);
@@ -226,8 +227,7 @@ public class FloatWindowService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service.
-        throw new UnsupportedOperationException("Not yet implemented");
+        return null;
     }
 
     @Override
