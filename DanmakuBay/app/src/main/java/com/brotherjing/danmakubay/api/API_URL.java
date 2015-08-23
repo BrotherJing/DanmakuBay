@@ -14,6 +14,7 @@ public interface API_URL {
     String URL_USER_INFO = "https://api.shanbay.com/account/";
     String URL_SEARCH_WORD = "https://api.shanbay.com/bdc/search/?word=";
     String URL_ADD_WORD = "https://api.shanbay.com/bdc/learning/";
+    String URL_GET_SENTENCE = "https://api.shanbay.com/bdc/example/?type=sys&vocabulary_id=";
 
     String SUFFIX_ACCESS_TOKEN = "access_token=";
 }

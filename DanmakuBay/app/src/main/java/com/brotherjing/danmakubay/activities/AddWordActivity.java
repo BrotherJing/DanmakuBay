@@ -14,11 +14,15 @@ import android.widget.Toast;
 
 import com.brotherjing.danmakubay.R;
 import com.brotherjing.danmakubay.utils.Result;
+import com.brotherjing.danmakubay.utils.TextUtil;
 import com.brotherjing.danmakubay.utils.ViewUtil;
 import com.brotherjing.danmakubay.utils.WordDBManager;
+import com.brotherjing.danmakubay.utils.beans.SentenceBean;
 import com.brotherjing.danmakubay.utils.beans.WordBean;
 import com.brotherjing.danmakubay.utils.providers.ShanbayProvider;
 import com.greendao.dao.Word;
+
+import java.util.List;
 
 public class AddWordActivity extends Activity {
 
@@ -26,9 +30,10 @@ public class AddWordActivity extends Activity {
     WordDBManager wordDBManager;
 
     EditText et;
-    TextView tvSearch,tvDesc,btnAdd;
+    TextView tvSearch,tvDesc,btnAdd,tvSentences;
 
     WordBean searchResult;
+    List<SentenceBean> sentenceBeanList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,10 +48,12 @@ public class AddWordActivity extends Activity {
         tvSearch = f(R.id.btn_search);
         tvDesc = f(R.id.tv_description);
         btnAdd = f(R.id.btn_add_word);
+        tvSentences = f(R.id.tv_sentences);
         et = f(R.id.et_search);
 
         btnAdd.setVisibility(View.GONE);
         tvDesc.setVisibility(View.GONE);
+        tvSentences.setVisibility(View.GONE);
 
         tvSearch.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,6 +73,8 @@ public class AddWordActivity extends Activity {
     private void initData(){
         provider = new ShanbayProvider();
         wordDBManager = new WordDBManager(this);
+        searchResult = null;
+        sentenceBeanList = null;
     }
 
     private class AddWordTask extends AsyncTask<Void,Void,Result>{
@@ -73,7 +82,10 @@ public class AddWordActivity extends Activity {
         protected Result doInBackground(Void... params) {
             if(provider.addNewWord(searchResult.getId())){
                 Word word = provider.from(searchResult);
-                if(wordDBManager.addWord(word))return new Result(true,"");
+                if(wordDBManager.addWord(word)){
+                    wordDBManager.addSentences(sentenceBeanList,word);
+                    return new Result(true,"");
+                }
             }
             return new Result(false,"");
         }
@@ -94,8 +106,11 @@ public class AddWordActivity extends Activity {
         protected Result doInBackground(String... params) {
             try {
                 wordBean = provider.getWord(params[0]);
-                if(wordBean!=null)
-                    return new Result(true, "");
+                if(wordBean!=null) {
+                    sentenceBeanList = provider.getSentences(wordBean.getId());
+                    if(sentenceBeanList!=null)
+                        return new Result(true, "");
+                }
             }catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -110,6 +125,14 @@ public class AddWordActivity extends Activity {
                 tvDesc.setText(wordBean.getPronunciation() + "\n" + wordBean.getDefinition());
                 btnAdd.setVisibility(View.VISIBLE);
                 searchResult = wordBean;
+                if(!sentenceBeanList.isEmpty()){
+                    tvSentences.setVisibility(View.VISIBLE);
+                    String str = "";
+                    for(SentenceBean sb:sentenceBeanList){
+                        str+= TextUtil.removeTags(sb.getSentence())+"\n"+sb.getTranslation()+"\n\n";
+                    }
+                    tvSentences.setText(str);
+                }
             }
             else Toast.makeText(AddWordActivity.this,R.string.get_fail,Toast.LENGTH_SHORT).show();
         }

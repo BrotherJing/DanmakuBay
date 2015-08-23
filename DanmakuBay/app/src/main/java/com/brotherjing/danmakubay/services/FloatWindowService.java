@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.os.Handler;
 import android.os.IBinder;
@@ -24,6 +25,7 @@ import com.brotherjing.danmakubay.utils.DataUtil;
 import com.brotherjing.danmakubay.utils.WordDBManager;
 import com.brotherjing.simpledanmakuview.Danmaku;
 import com.brotherjing.simpledanmakuview.DanmakuView;
+import com.greendao.dao.Sentence;
 import com.greendao.dao.Word;
 
 import java.lang.ref.WeakReference;
@@ -50,7 +52,8 @@ public class FloatWindowService extends Service {
     private WordDBManager wordDBManager;
 
     private List<Word> wordlist;
-    private int word_cnt, current;
+    private List<Sentence> sentenceList;
+    private int word_cnt,sentence_cnt,total_cnt, current;
 
     private int speed;
     private boolean show_bg,all_app;
@@ -80,14 +83,20 @@ public class FloatWindowService extends Service {
     private void initData(){
         wordDBManager = new WordDBManager(this);
         wordlist = wordDBManager.getList();
+        sentenceList = new ArrayList<>();
+        for(Word word:wordlist){
+            sentenceList.addAll(word.getSentenceList());
+        }
         word_cnt = wordlist.size();
+        sentence_cnt = sentenceList.size();
+        total_cnt = word_cnt+sentence_cnt;
         current = 0;
 
         speed = DataUtil.getInt(API_SPF.SPF_SETTING, API_SPF.ITEM_DANMAKU_SPEED, 50);
         show_bg = DataUtil.getBoolean(API_SPF.SPF_SETTING, API_SPF.ITEM_SHOW_BG, true);
-        all_app = DataUtil.getBoolean(API_SPF.SPF_SETTING, API_SPF.ITEM_DISPLAY_AREA,false);
+        all_app = DataUtil.getBoolean(API_SPF.SPF_SETTING, API_SPF.ITEM_DISPLAY_AREA, false);
 
-        danmakuView.setMSPF(20+(speed-50)/10);
+        danmakuView.setMSPF(20 + (speed - 50) / 10);
         if(!show_bg)background.setVisibility(View.GONE);
     }
 
@@ -141,9 +150,13 @@ public class FloatWindowService extends Service {
                         service.windowManager.addView(service.danmakuLayout, service.layoutParams);
                         service.isAdded = true;
                     }
-                    Danmaku danmaku = new Danmaku(service.wordlist.get(service.current).getWord());
-                    service.danmakuView.addDanmaku(danmaku);
-                    service.current = (service.current+1)%service.word_cnt;
+                    if(service.current>=service.word_cnt){
+                        service.danmakuView.addDanmaku(new Danmaku(service.sentenceList.get(service.current-service.word_cnt).getSentence(), Color.WHITE,false, Danmaku.DanmakuType.SHIFTING, Danmaku.DanmakuSpeed.SLOW));
+                    }
+                    else {
+                        service.danmakuView.addDanmaku(new Danmaku(service.wordlist.get(service.current).getWord()));
+                    }
+                    service.current = (service.current+1)%service.total_cnt;
                 } else {
                     if (service.isAdded) {
                         service.windowManager.removeView(service.danmakuLayout);

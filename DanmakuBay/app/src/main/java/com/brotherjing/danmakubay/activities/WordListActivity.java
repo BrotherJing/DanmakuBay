@@ -7,7 +7,9 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.brotherjing.danmakubay.R;
@@ -24,6 +26,8 @@ public class WordListActivity extends Activity {
     List<Word> wordList;
     WordDBManager wordDBManager;
 
+    UniversalAdapter<Word> adapter;
+
     ListView lv;
 
     @Override
@@ -35,7 +39,7 @@ public class WordListActivity extends Activity {
         lv = (ListView)findViewById(R.id.lv);
         wordDBManager = new WordDBManager(this);
         wordList = wordDBManager.getList();
-        lv.setAdapter(new UniversalAdapter<Word>(this,wordList,R.layout.item_word_list) {
+        lv.setAdapter(adapter=new UniversalAdapter<Word>(this,wordList,R.layout.item_word_list) {
             @Override
             public void convert(UniversalViewHolder viewHolder, Word item, int position) {
                 TextView tvWord = viewHolder.getView(R.id.tvWord);
@@ -46,6 +50,28 @@ public class WordListActivity extends Activity {
                 tvDesc.setText(item.getDefinition());
             }
         });
+        lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                final int pos = position;
+                PopupMenu popupMenu = new PopupMenu(WordListActivity.this,view);
+                Menu menu = popupMenu.getMenu();
+                popupMenu.getMenuInflater().inflate(R.menu.menu_word_list,menu);
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        if (item.getItemId() == R.id.delete) {
+                            wordDBManager.deleteWord(wordList.get(pos));
+                            wordList.remove(pos);
+                            refresh();
+                        }
+                        return false;
+                    }
+                });
+                popupMenu.show();
+                return false;
+            }
+        });
     }
 
     private void initActionBar(){
@@ -53,6 +79,10 @@ public class WordListActivity extends Activity {
         ViewUtil.customizeActionBar(actionBar, R.layout.actionbar_message_index);
         View view = actionBar.getCustomView();
         ((TextView)view.findViewById(R.id.textViewTitle)).setText(getResources().getText(R.string.word_list));
+    }
+
+    private void refresh(){
+        adapter.notifyDataSetChanged();
     }
 
 }

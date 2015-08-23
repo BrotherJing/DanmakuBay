@@ -39,4 +39,6 @@
     <string name="all_app">所有应用</string>
     <string name="show_bg">显示背景</string>
     <string name="save">保存</string>
+
+    <string name="delete_word">删除</string>
 </resources>

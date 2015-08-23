@@ -4,6 +4,8 @@ import com.brotherjing.danmakubay.api.API_SPF;
 import com.brotherjing.danmakubay.api.API_URL;
 import com.brotherjing.danmakubay.utils.CrossyHttpClient;
 import com.brotherjing.danmakubay.utils.DataUtil;
+import com.brotherjing.danmakubay.utils.beans.SentenceBean;
+import com.brotherjing.danmakubay.utils.beans.SentenceResponse;
 import com.brotherjing.danmakubay.utils.beans.ShanbayResponse;
 import com.brotherjing.danmakubay.utils.beans.UserInfo;
 import com.brotherjing.danmakubay.utils.beans.WordBean;
@@ -36,6 +38,14 @@ public class ShanbayProvider {
         return CrossyHttpClient.getBean(API_URL.URL_USER_INFO + "?" +
                         API_URL.SUFFIX_ACCESS_TOKEN + DataUtil.getString(API_SPF.SPF_TOKEN, API_SPF.ITEM_ACCESS_TOKEN),
                 DataUtil.getString(API_SPF.SPF_TOKEN, API_SPF.ITEM_COOKIES), UserInfo.class);
+    }
+
+    public List<SentenceBean> getSentences(long word_id){
+        SentenceResponse response = CrossyHttpClient.getBean(API_URL.URL_GET_SENTENCE + word_id + "&" + API_URL.SUFFIX_ACCESS_TOKEN +
+                        DataUtil.getString(API_SPF.SPF_TOKEN, API_SPF.ITEM_ACCESS_TOKEN), DataUtil.getString(API_SPF.SPF_TOKEN, API_SPF.ITEM_COOKIES),
+                SentenceResponse.class);
+        if(response.getStatus_code()!=0)return null;
+        return response.getList();
     }
 
     public boolean addNewWord(long id){

@@ -19,7 +19,7 @@ public class WordDao extends AbstractDao<Word, Long> {
     public static final String TABLENAME = "WORD";
 
     /**
-     * Properties of entity WordBean.<br/>
+     * Properties of entity Word.<br/>
      * Can be used for QueryBuilder and for referencing column names.
     */
     public static class Properties {
@@ -32,6 +32,8 @@ public class WordDao extends AbstractDao<Word, Long> {
         public final static Property Audio = new Property(6, String.class, "audio", false, "AUDIO");
     };
 
+    private DaoSession daoSession;
+
 
     public WordDao(DaoConfig config) {
         super(config);
@@ -39,6 +41,7 @@ public class WordDao extends AbstractDao<Word, Long> {
     
     public WordDao(DaoConfig config, DaoSession daoSession) {
         super(config, daoSession);
+        this.daoSession = daoSession;
     }
 
     /** Creates the underlying database table. */
@@ -99,6 +102,12 @@ public class WordDao extends AbstractDao<Word, Long> {
         if (audio != null) {
             stmt.bindString(7, audio);
         }
+    }
+
+    @Override
+    protected void attachEntity(Word entity) {
+        super.attachEntity(entity);
+        entity.__setDaoSession(daoSession);
     }
 
     /** @inheritdoc */

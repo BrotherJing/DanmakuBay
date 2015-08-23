@@ -1,6 +1,7 @@
 package com.example;
 
 import de.greenrobot.daogenerator.Entity;
+import de.greenrobot.daogenerator.Property;
 import de.greenrobot.daogenerator.Schema;
 
 public class DaoGenerator {
@@ -15,11 +16,19 @@ public class DaoGenerator {
     private static void addWord(Schema schema){
         Entity word = schema.addEntity("Word");
         word.addIdProperty().autoincrement().primaryKey();
-        word.addLongProperty("shanbay_id");
+        Property shanbayId = word.addLongProperty("shanbay_id").getProperty();
         word.addLongProperty("learning_id");
         word.addStringProperty("word");
         word.addStringProperty("pronounce");
         word.addStringProperty("definition");
         word.addStringProperty("audio");
+
+        Entity sentence = schema.addEntity("Sentence");
+        sentence.addIdProperty().autoincrement().primaryKey();
+        sentence.addStringProperty("sentence");
+        sentence.addStringProperty("translation");
+        Property wordId = sentence.addLongProperty("shanbay_id").getProperty();
+
+        word.addToMany(shanbayId,sentence,wordId);
     }
 }

@@ -28,12 +28,14 @@ import android.widget.Toast;
 import com.brotherjing.danmakubay.R;
 import com.brotherjing.danmakubay.utils.Result;
 import com.brotherjing.danmakubay.utils.WordDBManager;
+import com.brotherjing.danmakubay.utils.beans.SentenceBean;
 import com.brotherjing.danmakubay.utils.beans.WordBean;
 import com.brotherjing.danmakubay.utils.providers.ShanbayProvider;
 import com.brotherjing.simpledanmakuview.DanmakuView;
 import com.greendao.dao.Word;
 
 import java.nio.channels.spi.SelectorProvider;
+import java.util.List;
 
 public class FloatToolService extends Service {
 
@@ -50,6 +52,7 @@ public class FloatToolService extends Service {
     WordDBManager wordDBManager;
 
     WordBean searchResult;
+    List<SentenceBean> sentenceBeanList;
 
     boolean isAdded;
 
@@ -164,12 +167,7 @@ public class FloatToolService extends Service {
             @Override
             public void onClick(View v) {
                 if(searchResult==null)return;
-                Word word = provider.from(searchResult);
-                if(wordDBManager.addWord(word)){
-                    Toast.makeText(FloatToolService.this,R.string.add_success,Toast.LENGTH_SHORT).show();
-                }else {
-                    Toast.makeText(FloatToolService.this,R.string.add_fail,Toast.LENGTH_SHORT).show();
-                }
+                new AddWordTask().execute();
             }
         });
 
@@ -242,14 +240,40 @@ public class FloatToolService extends Service {
         }
     }
 
+    private class AddWordTask extends AsyncTask<Void,Void,Result>{
+        @Override
+        protected Result doInBackground(Void... params) {
+            if(provider.addNewWord(searchResult.getId())){
+                Word word = provider.from(searchResult);
+                if(wordDBManager.addWord(word)){
+                    wordDBManager.addSentences(sentenceBeanList,word);
+                    return new Result(true,"");
+                }
+            }
+            return new Result(false,"");
+        }
+
+        @Override
+        protected void onPostExecute(Result result) {
+            super.onPostExecute(result);
+            if(result.isSuccess()){
+                Toast.makeText(FloatToolService.this,R.string.add_success,Toast.LENGTH_SHORT).show();
+            }
+            else Toast.makeText(FloatToolService.this,R.string.add_fail,Toast.LENGTH_SHORT).show();
+        }
+    }
+
     private class SearchWordTask extends AsyncTask<String,Void,Result> {
         WordBean wordBean = null;
         @Override
         protected Result doInBackground(String... params) {
             try {
                 wordBean = provider.getWord(params[0]);
-                if(wordBean!=null)
-                    return new Result(true, "");
+                if(wordBean!=null) {
+                    sentenceBeanList = provider.getSentences(wordBean.getId());
+                    if(sentenceBeanList!=null)
+                        return new Result(true, "");
+                }
             }catch (Exception ex) {
                 ex.printStackTrace();
             }
