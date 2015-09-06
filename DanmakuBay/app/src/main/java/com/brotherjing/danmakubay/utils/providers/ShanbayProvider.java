@@ -66,6 +66,7 @@ public class ShanbayProvider {
         word.setShanbay_id(wordBean.getId());
         word.setDefinition(wordBean.getDefinition());
         word.setPronounce(wordBean.getPronunciation());
+        word.setAudio(wordBean.getAudioUrl());
         return word;
     }
 

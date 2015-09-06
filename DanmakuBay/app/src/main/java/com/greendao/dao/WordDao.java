@@ -30,6 +30,7 @@ public class WordDao extends AbstractDao<Word, Long> {
         public final static Property Pronounce = new Property(4, String.class, "pronounce", false, "PRONOUNCE");
         public final static Property Definition = new Property(5, String.class, "definition", false, "DEFINITION");
         public final static Property Audio = new Property(6, String.class, "audio", false, "AUDIO");
+        public final static Property Audio_local = new Property(7, String.class, "audio_local", false, "AUDIO_LOCAL");
     };
 
     private DaoSession daoSession;
@@ -54,7 +55,8 @@ public class WordDao extends AbstractDao<Word, Long> {
                 "\"WORD\" TEXT," + // 3: word
                 "\"PRONOUNCE\" TEXT," + // 4: pronounce
                 "\"DEFINITION\" TEXT," + // 5: definition
-                "\"AUDIO\" TEXT);"); // 6: audio
+                "\"AUDIO\" TEXT," + // 6: audio
+                "\"AUDIO_LOCAL\" TEXT);"); // 7: audio_local
     }
 
     /** Drops the underlying database table. */
@@ -102,6 +104,11 @@ public class WordDao extends AbstractDao<Word, Long> {
         if (audio != null) {
             stmt.bindString(7, audio);
         }
+ 
+        String audio_local = entity.getAudio_local();
+        if (audio_local != null) {
+            stmt.bindString(8, audio_local);
+        }
     }
 
     @Override
@@ -126,7 +133,8 @@ public class WordDao extends AbstractDao<Word, Long> {
             cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // word
             cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // pronounce
             cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // definition
-            cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6) // audio
+            cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // audio
+            cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7) // audio_local
         );
         return entity;
     }
@@ -141,6 +149,7 @@ public class WordDao extends AbstractDao<Word, Long> {
         entity.setPronounce(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
         entity.setDefinition(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
         entity.setAudio(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
+        entity.setAudio_local(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
      }
     
     /** @inheritdoc */

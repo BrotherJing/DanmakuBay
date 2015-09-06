@@ -22,6 +22,7 @@ public class DaoGenerator {
         word.addStringProperty("pronounce");
         word.addStringProperty("definition");
         word.addStringProperty("audio");
+        word.addStringProperty("audio_local");
 
         Entity sentence = schema.addEntity("Sentence");
         sentence.addIdProperty().autoincrement().primaryKey();

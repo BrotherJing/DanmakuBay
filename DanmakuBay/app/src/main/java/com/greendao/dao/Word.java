@@ -17,6 +17,7 @@ public class Word {
     private String pronounce;
     private String definition;
     private String audio;
+    private String audio_local;
 
     /** Used to resolve relations */
     private transient DaoSession daoSession;
@@ -33,7 +34,7 @@ public class Word {
         this.id = id;
     }
 
-    public Word(Long id, Long shanbay_id, Long learning_id, String word, String pronounce, String definition, String audio) {
+    public Word(Long id, Long shanbay_id, Long learning_id, String word, String pronounce, String definition, String audio, String audio_local) {
         this.id = id;
         this.shanbay_id = shanbay_id;
         this.learning_id = learning_id;
@@ -41,6 +42,7 @@ public class Word {
         this.pronounce = pronounce;
         this.definition = definition;
         this.audio = audio;
+        this.audio_local = audio_local;
     }
 
     /** called by internal mechanisms, do not call yourself. */
@@ -103,6 +105,14 @@ public class Word {
 
     public void setAudio(String audio) {
         this.audio = audio;
+    }
+
+    public String getAudio_local() {
+        return audio_local;
+    }
+
+    public void setAudio_local(String audio_local) {
+        this.audio_local = audio_local;
     }
 
     /** To-many relationship, resolved on first access (and after reset). Changes to to-many relations are not persisted, make changes to the target entity. */

@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.brotherjing.danmakubay.App;
 import com.brotherjing.danmakubay.R;
 import com.brotherjing.danmakubay.utils.Result;
+import com.brotherjing.danmakubay.utils.SoundManager;
 import com.brotherjing.danmakubay.utils.TextUtil;
 import com.brotherjing.danmakubay.utils.ViewUtil;
 import com.brotherjing.danmakubay.utils.WordDBManager;
@@ -76,7 +77,7 @@ public class AddWordActivity extends Activity {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if(actionId== EditorInfo.IME_ACTION_SEARCH){
                     if (TextUtils.isEmpty(et.getText())) return false;
-                    new SearchWordTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,et.getText().toString());
+                    new SearchWordTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, et.getText().toString());
                 }
                 return false;
             }
@@ -95,9 +96,14 @@ public class AddWordActivity extends Activity {
         protected Result doInBackground(Void... params) {
             if(provider.addNewWord(searchResult.getId())){
                 Word word = provider.from(searchResult);
-                if(wordDBManager.addWord(word)){
-                    wordDBManager.addSentences(sentenceBeanList, word);
-                    return new Result(true,"");
+                if(!wordDBManager.ifExist(word)){
+                    String file_dir = SoundManager.downloadSound(word);
+                    if(!TextUtils.isEmpty(file_dir)){
+                        word.setAudio_local(file_dir);
+                        wordDBManager.addWord(word);
+                        wordDBManager.addSentences(sentenceBeanList, word);
+                        return new Result(true,"");
+                    }
                 }
             }
             return new Result(false,"");

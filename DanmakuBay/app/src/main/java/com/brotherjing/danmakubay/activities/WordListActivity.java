@@ -2,6 +2,7 @@ package com.brotherjing.danmakubay.activities;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 
 import com.brotherjing.danmakubay.App;
 import com.brotherjing.danmakubay.R;
+import com.brotherjing.danmakubay.utils.SoundManager;
 import com.brotherjing.danmakubay.utils.ViewUtil;
 import com.brotherjing.danmakubay.utils.WordDBManager;
 import com.brotherjing.danmakubay.utils.views.UniversalAdapter;
@@ -37,6 +39,8 @@ public class WordListActivity extends Activity {
         setContentView(R.layout.activity_word_list);
         initActionBar();
 
+        SoundManager.prepare();
+
         lv = (ListView)findViewById(R.id.lv);
         wordDBManager = App.getWordDBManager();
         wordList = wordDBManager.getList();
@@ -49,6 +53,19 @@ public class WordListActivity extends Activity {
                 tvWord.setText(item.getWord());
                 tvPron.setText("["+item.getPronounce()+"]");
                 tvDesc.setText(item.getDefinition());
+            }
+        });
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                final int pos = position;
+                new AsyncTask<Void,Void,Void>(){
+                    @Override
+                    protected Void doInBackground(Void... params) {
+                        SoundManager.playSound(wordList.get(pos));
+                        return null;
+                    }
+                }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
         });
         lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -86,4 +103,9 @@ public class WordListActivity extends Activity {
         adapter.notifyDataSetChanged();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        SoundManager.release();
+    }
 }

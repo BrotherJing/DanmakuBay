@@ -16,6 +16,8 @@ public class WordBean {
     String pronunciation;
     @SerializedName("id")
     long id;
+    @SerializedName("audio")
+    String audioUrl;
 
     public WordBean() {
     }
@@ -58,5 +60,13 @@ public class WordBean {
 
     public void setPronunciation(String pronunciation) {
         this.pronunciation = pronunciation;
+    }
+
+    public String getAudioUrl() {
+        return audioUrl;
+    }
+
+    public void setAudioUrl(String audioUrl) {
+        this.audioUrl = audioUrl;
     }
 }
