@@ -12,6 +12,7 @@ import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
+import com.brotherjing.danmakubay.App;
 import com.brotherjing.danmakubay.R;
 import com.brotherjing.danmakubay.utils.ViewUtil;
 import com.brotherjing.danmakubay.utils.WordDBManager;
@@ -37,7 +38,7 @@ public class WordListActivity extends Activity {
         initActionBar();
 
         lv = (ListView)findViewById(R.id.lv);
-        wordDBManager = new WordDBManager(this);
+        wordDBManager = App.getWordDBManager();
         wordList = wordDBManager.getList();
         lv.setAdapter(adapter=new UniversalAdapter<Word>(this,wordList,R.layout.item_word_list) {
             @Override
@@ -46,7 +47,7 @@ public class WordListActivity extends Activity {
                 TextView tvPron = viewHolder.getView(R.id.tvPronounce);
                 TextView tvDesc = viewHolder.getView(R.id.tvDesc);
                 tvWord.setText(item.getWord());
-                tvPron.setText(item.getPronounce());
+                tvPron.setText("["+item.getPronounce()+"]");
                 tvDesc.setText(item.getDefinition());
             }
         });

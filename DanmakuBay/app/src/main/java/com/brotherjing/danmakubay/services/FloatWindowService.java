@@ -18,11 +18,14 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
+import com.brotherjing.danmakubay.App;
 import com.brotherjing.danmakubay.R;
 import com.brotherjing.danmakubay.api.API_SPF;
 import com.brotherjing.danmakubay.utils.DataUtil;
 import com.brotherjing.danmakubay.utils.WordDBManager;
+import com.brotherjing.danmakubay.utils.views.DragClickLayout;
 import com.brotherjing.simpledanmakuview.Danmaku;
 import com.brotherjing.simpledanmakuview.DanmakuView;
 import com.greendao.dao.Sentence;
@@ -34,11 +37,15 @@ import java.util.List;
 
 public class FloatWindowService extends Service {
 
+    private final static int HANDLE_CHECK_ACTIVITY = 1;
+    private final static int HANDLE_FINISH = 2;
+
+    private final MyHandler handler = new MyHandler(this);
     private WindowManager.LayoutParams layoutParams;
     private WindowManager windowManager;
 
     //danmaku layout and view
-    private LinearLayout danmakuLayout;
+    private DragClickLayout danmakuLayout;
     private DanmakuView danmakuView;
     private View background;
     private ImageView ivRemove;
@@ -80,8 +87,28 @@ public class FloatWindowService extends Service {
         return super.onStartCommand(intent, flags, startId);
     }
 
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        try {
+            windowManager.removeView(danmakuLayout);
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+        handler.removeMessages(HANDLE_CHECK_ACTIVITY);
+        handler.sendEmptyMessage(HANDLE_FINISH);
+    }
+
     private void initData(){
-        wordDBManager = new WordDBManager(this);
+        //wordDBManager = new WordDBManager(this);
+        wordDBManager = App.getWordDBManager();
+
+        //load words and sentences form database
         wordlist = wordDBManager.getList();
         sentenceList = new ArrayList<>();
         for(Word word:wordlist){
@@ -96,7 +123,7 @@ public class FloatWindowService extends Service {
         show_bg = DataUtil.getBoolean(API_SPF.SPF_SETTING, API_SPF.ITEM_SHOW_BG, true);
         all_app = DataUtil.getBoolean(API_SPF.SPF_SETTING, API_SPF.ITEM_DISPLAY_AREA, false);
 
-        danmakuView.setMSPF(20 + (speed - 50) / 10);
+        danmakuView.setMSPF(20 - (speed - 50) / 10);
         if(!show_bg)background.setVisibility(View.GONE);
     }
 
@@ -129,8 +156,6 @@ public class FloatWindowService extends Service {
     /**
      * check if the current activity is home. if not, hide the floating window.
      */
-    private final static int HANDLE_CHECK_ACTIVITY = 1;
-    private final static int HANDLE_FINISH = 2;
     private final static class MyHandler extends Handler{
 
         private WeakReference<FloatWindowService> reference;
@@ -170,11 +195,10 @@ public class FloatWindowService extends Service {
             }
         }
     }
-    private final MyHandler handler = new MyHandler(this);
 
     private void initView(){
         LayoutInflater inflater = LayoutInflater.from(getApplication());
-        danmakuLayout = (LinearLayout)inflater.inflate(R.layout.float_window_danmaku, null);
+        danmakuLayout = (DragClickLayout)inflater.inflate(R.layout.float_window_danmaku, null);
         danmakuView = (DanmakuView)danmakuLayout.findViewById(R.id.danmakuFloating);
         danmakuView.setMode(DanmakuView.MODE_NO_OVERDRAW);
         ivRemove = (ImageView)danmakuLayout.findViewById(R.id.ivRemoveFloatWindow);
@@ -202,49 +226,26 @@ public class FloatWindowService extends Service {
 
     private void initListener(){
 
-        danmakuLayout.setOnTouchListener(new View.OnTouchListener() {
-            int startX,startY;
+        danmakuLayout.setOnDragListener(new DragClickLayout.OnDragListener() {
             int paramx,paramy;
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch(event.getAction()){
-                    case MotionEvent.ACTION_DOWN:
-                        startX = (int)event.getRawX();
-                        startY = (int)event.getRawY();
-                        paramx = layoutParams.x;
-                        paramy = layoutParams.y;
-                        //Log.i("yj", "down,x=" + startX + " y=" + startY);
-                        //background.setVisibility(View.VISIBLE);
-                        break;
-                    case MotionEvent.ACTION_MOVE:
-                        int dx = (int)event.getRawX()-startX;
-                        int dy = (int)event.getRawY()-startY;
-                        layoutParams.x = paramx+dx;
-                        layoutParams.y = paramy+dy;
-                        windowManager.updateViewLayout(danmakuLayout,layoutParams);
-                        //Log.i("yj", "move,dx=" + dx + " dy=" + dy);
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        //background.setVisibility(View.GONE);
-                        int mx = (int)event.getRawX()-startX;
-                        int my = (int)event.getRawY()-startY;
-                        /*if((mx<10&&mx>-10)&&(my<10&&my>-10)){
-                            if(ivRemove.getVisibility()== View.INVISIBLE)
-                                ivRemove.setVisibility(View.VISIBLE);
-                            else
-                                ivRemove.setVisibility(View.INVISIBLE);
-                        }*/
-                        break;
-                    default:break;
-                }
-                return true;
+            public void onDragStarted() {
+                paramx = layoutParams.x;
+                paramy = layoutParams.y;
+            }
+
+            @Override
+            public void onDrag(float movedX, float movedY) {
+                layoutParams.x = paramx+(int)movedX;
+                layoutParams.y = paramy+(int)movedY;
+                windowManager.updateViewLayout(danmakuLayout,layoutParams);
             }
         });
 
         ivRemove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(ivRemove.getVisibility()== View.VISIBLE) {
+                if (ivRemove.getVisibility() == View.VISIBLE) {
                     handler.removeMessages(HANDLE_CHECK_ACTIVITY);
                     windowManager.removeView(danmakuLayout);
                     FloatWindowService.this.stopSelf();
@@ -252,23 +253,14 @@ public class FloatWindowService extends Service {
             }
         });
 
+        danmakuView.setOnDanmakuClickListener(new DanmakuView.OnDanmakuClickListener() {
+            @Override
+            public void onDanmakuClick(Danmaku danmaku) {
+                Toast.makeText(FloatWindowService.this,danmaku.getText(),Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        try {
-            windowManager.removeView(danmakuLayout);
-        }catch (Exception ex){
-            ex.printStackTrace();
-        }
-        handler.removeMessages(HANDLE_CHECK_ACTIVITY);
-        handler.sendEmptyMessage(HANDLE_FINISH);
-    }
 }
 

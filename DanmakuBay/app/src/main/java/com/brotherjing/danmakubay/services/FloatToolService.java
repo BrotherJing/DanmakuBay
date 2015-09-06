@@ -25,6 +25,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.brotherjing.danmakubay.App;
 import com.brotherjing.danmakubay.R;
 import com.brotherjing.danmakubay.utils.Result;
 import com.brotherjing.danmakubay.utils.WordDBManager;
@@ -65,7 +66,8 @@ public class FloatToolService extends Service {
         super.onCreate();
         windowManager = (WindowManager)getApplication().getSystemService(getApplication().WINDOW_SERVICE);
         provider = new ShanbayProvider();
-        wordDBManager = new WordDBManager(this);
+        //wordDBManager = new WordDBManager(this);
+        wordDBManager = App.getWordDBManager();
     }
 
     @Override

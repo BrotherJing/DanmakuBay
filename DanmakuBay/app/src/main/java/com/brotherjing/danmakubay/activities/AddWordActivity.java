@@ -6,12 +6,15 @@ import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.brotherjing.danmakubay.App;
 import com.brotherjing.danmakubay.R;
 import com.brotherjing.danmakubay.utils.Result;
 import com.brotherjing.danmakubay.utils.TextUtil;
@@ -65,14 +68,24 @@ public class AddWordActivity extends Activity {
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new AddWordTask().execute();
+                new AddWordTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            }
+        });
+        et.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if(actionId== EditorInfo.IME_ACTION_SEARCH){
+                    if (TextUtils.isEmpty(et.getText())) return false;
+                    new SearchWordTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,et.getText().toString());
+                }
+                return false;
             }
         });
     }
 
     private void initData(){
         provider = new ShanbayProvider();
-        wordDBManager = new WordDBManager(this);
+        wordDBManager = App.getWordDBManager();
         searchResult = null;
         sentenceBeanList = null;
     }
@@ -83,7 +96,7 @@ public class AddWordActivity extends Activity {
             if(provider.addNewWord(searchResult.getId())){
                 Word word = provider.from(searchResult);
                 if(wordDBManager.addWord(word)){
-                    wordDBManager.addSentences(sentenceBeanList,word);
+                    wordDBManager.addSentences(sentenceBeanList, word);
                     return new Result(true,"");
                 }
             }
@@ -94,9 +107,9 @@ public class AddWordActivity extends Activity {
         protected void onPostExecute(Result result) {
             super.onPostExecute(result);
             if(result.isSuccess()){
-                Toast.makeText(AddWordActivity.this,"success",Toast.LENGTH_SHORT).show();
+                Toast.makeText(AddWordActivity.this,R.string.add_success,Toast.LENGTH_SHORT).show();
             }
-            else Toast.makeText(AddWordActivity.this,"fail",Toast.LENGTH_SHORT).show();
+            else Toast.makeText(AddWordActivity.this,R.string.add_fail,Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -122,7 +135,7 @@ public class AddWordActivity extends Activity {
             super.onPostExecute(result);
             if(result.isSuccess()){
                 tvDesc.setVisibility(View.VISIBLE);
-                tvDesc.setText(wordBean.getPronunciation() + "\n" + wordBean.getDefinition());
+                tvDesc.setText("["+wordBean.getPronunciation() + "]\n" + wordBean.getDefinition());
                 btnAdd.setVisibility(View.VISIBLE);
                 searchResult = wordBean;
                 if(!sentenceBeanList.isEmpty()){

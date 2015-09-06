@@ -4,6 +4,7 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -25,8 +26,13 @@ import com.brotherjing.danmakubay.utils.beans.UserInfo;
 import com.brotherjing.danmakubay.utils.providers.ShanbayProvider;
 import com.google.gson.Gson;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ThreadPoolExecutor;
 
 
 public class MainActivity extends Activity {
@@ -86,7 +92,7 @@ public class MainActivity extends Activity {
 
         String userinforaw = DataUtil.getString(API_SPF.SPF_TOKEN, API_SPF.ITEM_USERINFO, null);
         if(userinforaw==null&&(flag&NO_NETWORK)==0){
-            new GetUserInfoTask().execute();
+            new GetUserInfoTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }else if(userinforaw!=null){
             userInfo = new Gson().fromJson(userinforaw,UserInfo.class);
             refreshView();
@@ -116,25 +122,10 @@ public class MainActivity extends Activity {
 
     private void refreshView(){
         tvName.setText(userInfo.getUsername());
-        ImageLoader.getInstance().displayImage(userInfo.getAvatar(), ivAvatar);
+        ImageLoader.getInstance().displayImage(userInfo.getAvatar(), ivAvatar,new AnimateListener());
     }
 
     private void initListener(){
-        /*btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new SearchWordTask().execute(et.getText().toString());
-            }
-        });
-        btn.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                Intent intent = new Intent(MainActivity.this,FloatWindowService.class);
-                startService(intent);
-                MainActivity.this.finish();
-                return true;
-            }
-        });*/
         tvOpenWindow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -203,7 +194,7 @@ public class MainActivity extends Activity {
                 //Toast.makeText(MainActivity.this,userInfo.getUsername(),Toast.LENGTH_SHORT).show();
                 refreshView();
             }else{
-                Toast.makeText(MainActivity.this,"not login",Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this,R.string.not_login,Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -211,6 +202,17 @@ public class MainActivity extends Activity {
         protected Result doInBackground(Void... params) {
             userInfo = provider.getUserInfo();
             return userInfo==null?new Result(false,""):new Result(true,"");
+        }
+    }
+
+    private static class AnimateListener extends SimpleImageLoadingListener {
+
+        @Override
+        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+            if (loadedImage != null) {
+                ImageView imageView = (ImageView) view;
+                    FadeInBitmapDisplayer.animate(imageView, 500);
+            }
         }
     }
 }

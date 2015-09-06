@@ -15,6 +15,7 @@ import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
@@ -37,6 +38,7 @@ public class CrossyHttpClient {
     final private static String USER_AGENT = "Mozilla/4.0 (compatible; MSIE 5.0; Windows NT; DigExt)";
     final private static String CONNECTION = "Keep-Alive";
     final private static String TAG = "atomu";
+    final private static int TIME_OUT = 10*1000;
 
     private static Gson gson;
     private static HttpClient httpClient;
@@ -95,12 +97,14 @@ public class CrossyHttpClient {
         //默认不允许重定向
         HttpParams httpParams = new BasicHttpParams();
         httpParams.setParameter("http.protocol.handle-redirects",false);
+        HttpConnectionParams.setConnectionTimeout(httpParams, TIME_OUT);
+        HttpConnectionParams.setSoTimeout(httpParams, TIME_OUT);
         get.setParams(httpParams);
 
         Header[] headers = get.getAllHeaders();
-        for(Header h:headers){
+        /*for(Header h:headers){
             Log.i("yj",h.getName()+"="+h.getValue());
-        }
+        }*/
 
         try {
 //            Response response = okHttpClient.newCall(request).execute();
@@ -191,7 +195,7 @@ public class CrossyHttpClient {
      */
     public static <T> T getBean(String url, String session, Type type, String charSet) {
         String response = get(url, session, charSet);
-        Log.d("atomu", "bean is " + response);
+        //Log.d("atomu", "bean is " + response);
         return fromJson(response, type);
     }
 
@@ -248,6 +252,8 @@ public class CrossyHttpClient {
         //默认不允许重定向
         HttpParams httpParams = new BasicHttpParams();
         httpParams.setParameter("http.protocol.handle-redirects",false);
+        HttpConnectionParams.setConnectionTimeout(httpParams, TIME_OUT);
+        HttpConnectionParams.setSoTimeout(httpParams, TIME_OUT);
         post.setParams(httpParams);
 
         try {

@@ -6,6 +6,7 @@
     <string name="title_activity_auth_login">AuthLoginActivity</string>
 
     <string name="unauthorized">未授权</string>
+    <string name="not_login">未登录</string>
     <string name="login_success">登陆成功</string>
     <string name="title_activity_launch">LaunchActivity</string>
 
