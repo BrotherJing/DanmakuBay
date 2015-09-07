@@ -79,6 +79,7 @@ public class WordListActivity extends Activity {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         if (item.getItemId() == R.id.delete) {
+                            SoundManager.deleteSound(wordList.get(pos));
                             wordDBManager.deleteWord(wordList.get(pos));
                             wordList.remove(pos);
                             refresh();
@@ -94,9 +95,15 @@ public class WordListActivity extends Activity {
 
     private void initActionBar(){
         ActionBar actionBar = getActionBar();
-        ViewUtil.customizeActionBar(actionBar, R.layout.actionbar_message_index);
+        ViewUtil.customizeActionBar(actionBar, R.layout.actionbar_with_title_back);
         View view = actionBar.getCustomView();
         ((TextView)view.findViewById(R.id.textViewTitle)).setText(getResources().getText(R.string.word_list));
+        view.findViewById(R.id.layout_actionbar_left).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     private void refresh(){

@@ -163,8 +163,16 @@ public class AddWordActivity extends Activity {
 
     private void initActionBar(){
         ActionBar actionBar = getActionBar();
-        ViewUtil.customizeActionBar(actionBar, R.layout.actionbar_message_index);
+        ViewUtil.customizeActionBar(actionBar, R.layout.actionbar_with_title_back);
         View view = actionBar.getCustomView();
         ((TextView)view.findViewById(R.id.textViewTitle)).setText(getResources().getText(R.string.add_word));
+
+        view.findViewById(R.id.layout_actionbar_left).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
     }
 }

@@ -1,61 +1,143 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="20dp"
     android:orientation="vertical"
+    android:background="@color/light_grey"
     tools:context="com.brotherjing.danmakubay.activities.DanmakuSettingActivity">
 
-    <TextView
+    <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/danmaku_speed"/>
+        android:padding="20dp"
+        android:orientation="vertical">
 
-    <SeekBar
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/sb_danmaku_speed"
-        android:progress="50"
-        android:max="100"/>
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:text="@string/danmaku_speed"/>
 
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="20dp"/>
+        <RadioGroup
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:id="@+id/rg_danmaku_speed">
+            <RadioButton
+                android:id="@+id/rb01"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/slow"/>
+            <RadioButton
+                android:id="@+id/rb02"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/normal"/>
+            <RadioButton
+                android:id="@+id/rb03"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/fast"/>
+        </RadioGroup>
 
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/display_area"/>
+        <SeekBar
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/sb_danmaku_speed"
+            android:progress="50"
+            android:visibility="gone"
+            android:max="100"/>
 
-    <RadioGroup
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:id="@+id/rg_display_area">
-        <RadioButton
-            android:id="@+id/rb1"
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textSize="18sp"
+            android:text="@string/text_size"/>
+
+        <SeekBar
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/sb_text_size"
+            android:progress="50"
+            android:max="100"/>
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textSize="18sp"
+            android:text="@string/danmaku_height"/>
+
+        <SeekBar
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/sb_danmaku_height"
+            android:progress="180"
+            android:max="200"/>
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textSize="18sp"
+            android:text="@string/display_area"/>
+
+        <RadioGroup
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:id="@+id/rg_display_area">
+            <RadioButton
+                android:id="@+id/rb1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/home_only"/>
+            <RadioButton
+                android:id="@+id/rb2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/all_app"/>
+        </RadioGroup>
+
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textSize="18sp"
+            android:text="@string/show_bg"/>
+        <CheckBox
+            android:id="@+id/cb_show_bg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/home_only"/>
-        <RadioButton
-            android:id="@+id/rb2"
-            android:layout_width="wrap_content"
+            android:checked="true"
+            android:text="@string/show_bg"/>
+
+
+        <TextView
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="@string/all_app"/>
-    </RadioGroup>
+            android:layout_marginTop="10dp"
+            android:textSize="18sp"
+            android:text="@string/preview"/>
+        <FrameLayout
+            android:layout_width="fill_parent"
+            android:layout_height="200dp"
+            android:id="@+id/ll">
 
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="20dp"/>
+            <com.brotherjing.simpledanmakuview.DanmakuView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:id="@+id/danmaku_view"/>
 
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/show_bg"/>
-    <CheckBox
-        android:id="@+id/cb_show_bg"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:checked="true"
-        android:text="@string/show_bg"/>
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:id="@+id/background"
+                android:background="@color/half_transparent"/>
 
-</LinearLayout>
+        </FrameLayout>
+
+    </LinearLayout>
+
+</ScrollView>

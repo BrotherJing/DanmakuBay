@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.brotherjing.danmakubay.App;
 import com.brotherjing.danmakubay.R;
 import com.brotherjing.danmakubay.utils.Result;
+import com.brotherjing.danmakubay.utils.SoundManager;
 import com.brotherjing.danmakubay.utils.WordDBManager;
 import com.brotherjing.danmakubay.utils.beans.SentenceBean;
 import com.brotherjing.danmakubay.utils.beans.WordBean;
@@ -247,9 +248,14 @@ public class FloatToolService extends Service {
         protected Result doInBackground(Void... params) {
             if(provider.addNewWord(searchResult.getId())){
                 Word word = provider.from(searchResult);
-                if(wordDBManager.addWord(word)){
-                    wordDBManager.addSentences(sentenceBeanList,word);
-                    return new Result(true,"");
+                if(!wordDBManager.ifExist(word)){
+                    String file_dir = SoundManager.downloadSound(word);
+                    if(!TextUtils.isEmpty(file_dir)){
+                        word.setAudio_local(file_dir);
+                        wordDBManager.addWord(word);
+                        wordDBManager.addSentences(sentenceBeanList, word);
+                        return new Result(true,"");
+                    }
                 }
             }
             return new Result(false,"");

@@ -6,16 +6,17 @@
 
     <FrameLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="200dp"
+        android:id="@+id/ll">
 
         <com.brotherjing.simpledanmakuview.DanmakuView
             android:layout_width="fill_parent"
-            android:layout_height="200dp"
+            android:layout_height="fill_parent"
             android:id="@+id/danmakuFloating"/>
 
         <View
             android:layout_width="fill_parent"
-            android:layout_height="200dp"
+            android:layout_height="fill_parent"
             android:id="@+id/background"
             android:background="@color/half_transparent"/>
 

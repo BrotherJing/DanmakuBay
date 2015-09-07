@@ -15,7 +15,9 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -24,6 +26,8 @@ import com.brotherjing.danmakubay.App;
 import com.brotherjing.danmakubay.R;
 import com.brotherjing.danmakubay.api.API_SPF;
 import com.brotherjing.danmakubay.utils.DataUtil;
+import com.brotherjing.danmakubay.utils.SoundManager;
+import com.brotherjing.danmakubay.utils.ViewUtil;
 import com.brotherjing.danmakubay.utils.WordDBManager;
 import com.brotherjing.danmakubay.utils.views.DragClickLayout;
 import com.brotherjing.simpledanmakuview.Danmaku;
@@ -46,6 +50,7 @@ public class FloatWindowService extends Service {
 
     //danmaku layout and view
     private DragClickLayout danmakuLayout;
+    private FrameLayout ll;
     private DanmakuView danmakuView;
     private View background;
     private ImageView ivRemove;
@@ -62,8 +67,10 @@ public class FloatWindowService extends Service {
     private List<Sentence> sentenceList;
     private int word_cnt,sentence_cnt,total_cnt, current;
 
-    private int speed;
-    private boolean show_bg,all_app;
+    //properties
+    int speed,speed_level,danmaku_height,text_size;
+    boolean show_bg,all_app;
+    Danmaku.DanmakuSpeed danmakuSpeed;
 
     @Override
     public void onCreate() {
@@ -102,11 +109,13 @@ public class FloatWindowService extends Service {
         }
         handler.removeMessages(HANDLE_CHECK_ACTIVITY);
         handler.sendEmptyMessage(HANDLE_FINISH);
+        SoundManager.release();
     }
 
     private void initData(){
         //wordDBManager = new WordDBManager(this);
         wordDBManager = App.getWordDBManager();
+        SoundManager.prepare();
 
         //load words and sentences form database
         wordlist = wordDBManager.getList();
@@ -120,10 +129,19 @@ public class FloatWindowService extends Service {
         current = 0;
 
         speed = DataUtil.getInt(API_SPF.SPF_SETTING, API_SPF.ITEM_DANMAKU_SPEED, 50);
+        speed_level = DataUtil.getInt(API_SPF.SPF_SETTING, API_SPF.ITEM_DANMAKU_SPEED_LEVEL, 1);
+        danmakuSpeed = fromInt(speed_level);
+        danmaku_height = DataUtil.getInt(API_SPF.SPF_SETTING, API_SPF.ITEM_DANMAKU_HEIGHT, 180);
+        text_size = DataUtil.getInt(API_SPF.SPF_SETTING, API_SPF.ITEM_TEXT_SIZE, 50);
         show_bg = DataUtil.getBoolean(API_SPF.SPF_SETTING, API_SPF.ITEM_SHOW_BG, true);
         all_app = DataUtil.getBoolean(API_SPF.SPF_SETTING, API_SPF.ITEM_DISPLAY_AREA, false);
 
         danmakuView.setMSPF(20 - (speed - 50) / 10);
+        danmakuView.setTextSize(18 + (text_size - 50) / 10);
+        ViewGroup.LayoutParams params = ll.getLayoutParams();
+        params.height = ViewUtil.dp2px(this, 20 + danmaku_height);
+        ll.setLayoutParams(params);
+        ll.requestLayout();
         if(!show_bg)background.setVisibility(View.GONE);
     }
 
@@ -175,11 +193,16 @@ public class FloatWindowService extends Service {
                         service.windowManager.addView(service.danmakuLayout, service.layoutParams);
                         service.isAdded = true;
                     }
+                    if(service.total_cnt==0)break;
                     if(service.current>=service.word_cnt){
-                        service.danmakuView.addDanmaku(new Danmaku(service.sentenceList.get(service.current-service.word_cnt).getSentence(), Color.WHITE,false, Danmaku.DanmakuType.SHIFTING, Danmaku.DanmakuSpeed.SLOW));
+                        Danmaku danmaku = new Danmaku(service.sentenceList.get(service.current-service.word_cnt).getSentence(),-1);
+                        danmaku.setSpeed(Danmaku.DanmakuSpeed.SLOW);
+                        service.danmakuView.addDanmaku(danmaku);
                     }
                     else {
-                        service.danmakuView.addDanmaku(new Danmaku(service.wordlist.get(service.current).getWord()));
+                        Danmaku danmaku = new Danmaku(service.wordlist.get(service.current).getWord(),service.current);
+                        danmaku.setSpeed(reference.get().danmakuSpeed);
+                        service.danmakuView.addDanmaku(danmaku);
                     }
                     service.current = (service.current+1)%service.total_cnt;
                 } else {
@@ -199,6 +222,7 @@ public class FloatWindowService extends Service {
     private void initView(){
         LayoutInflater inflater = LayoutInflater.from(getApplication());
         danmakuLayout = (DragClickLayout)inflater.inflate(R.layout.float_window_danmaku, null);
+        ll = (FrameLayout)danmakuLayout.findViewById(R.id.ll);
         danmakuView = (DanmakuView)danmakuLayout.findViewById(R.id.danmakuFloating);
         danmakuView.setMode(DanmakuView.MODE_NO_OVERDRAW);
         ivRemove = (ImageView)danmakuLayout.findViewById(R.id.ivRemoveFloatWindow);
@@ -227,7 +251,8 @@ public class FloatWindowService extends Service {
     private void initListener(){
 
         danmakuLayout.setOnDragListener(new DragClickLayout.OnDragListener() {
-            int paramx,paramy;
+            int paramx, paramy;
+
             @Override
             public void onDragStarted() {
                 paramx = layoutParams.x;
@@ -236,9 +261,9 @@ public class FloatWindowService extends Service {
 
             @Override
             public void onDrag(float movedX, float movedY) {
-                layoutParams.x = paramx+(int)movedX;
-                layoutParams.y = paramy+(int)movedY;
-                windowManager.updateViewLayout(danmakuLayout,layoutParams);
+                layoutParams.x = paramx + (int) movedX;
+                layoutParams.y = paramy + (int) movedY;
+                windowManager.updateViewLayout(danmakuLayout, layoutParams);
             }
         });
 
@@ -256,10 +281,22 @@ public class FloatWindowService extends Service {
         danmakuView.setOnDanmakuClickListener(new DanmakuView.OnDanmakuClickListener() {
             @Override
             public void onDanmakuClick(Danmaku danmaku) {
-                Toast.makeText(FloatWindowService.this,danmaku.getText(),Toast.LENGTH_SHORT).show();
+                //Toast.makeText(FloatWindowService.this,danmaku.getText(),Toast.LENGTH_SHORT).show();
+                if(danmaku.getId()<0)return;
+                Word word = wordlist.get(danmaku.getId());
+                if(word!=null) SoundManager.playSound(word);
             }
         });
 
+    }
+
+    private Danmaku.DanmakuSpeed fromInt(int speed_level){
+        switch (speed_level){
+            case API_SPF.SPEED_LEVEL_SLOW:return Danmaku.DanmakuSpeed.SLOW;
+            case API_SPF.SPEED_LEVEL_NORMAL:return Danmaku.DanmakuSpeed.NORMAL;
+            case API_SPF.SPEED_LEVEL_FAST:return Danmaku.DanmakuSpeed.FAST;
+            default:return Danmaku.DanmakuSpeed.NORMAL;
+        }
     }
 
 }

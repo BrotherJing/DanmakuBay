@@ -1,6 +1,7 @@
 package com.brotherjing.danmakubay.utils;
 
 import android.content.Context;
+import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Environment;
 
@@ -25,7 +26,7 @@ public class SoundManager {
     private static SoundPool soundPool;
 
     public static void prepare(){
-        soundPool = new SoundPool(1,0,5);
+        soundPool = new SoundPool(2, AudioManager.STREAM_MUSIC,5);
     }
 
     public static void release(){
@@ -63,19 +64,34 @@ public class SoundManager {
         return file_str;
     }
 
+    public static void deleteSound(Word word){
+        String dir_str = Environment.getExternalStorageDirectory().getAbsolutePath()+"/sounds";
+        String file_str = word.getAudio_local();
+        try{
+            File file = new File(dir_str,file_str);
+            file.delete();
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+    }
+
     public static void playSound(Word word){
         String file_str = word.getAudio_local();
         String dir_str = Environment.getExternalStorageDirectory().getAbsolutePath()+"/sounds";
-        File file = new File(dir_str,file_str);
-        int id = soundPool.load(file.getAbsolutePath(),100);
-        final int ii = id;
-        soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
-            @Override
-            public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
-                if (sampleId == ii)
-                    soundPool.play(ii,1,1,0,0,1);
-            }
-        });
+        try {
+            File file = new File(dir_str, file_str);
+            int id = soundPool.load(file.getAbsolutePath(), 100);
+            final int ii = id;
+            soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+                @Override
+                public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
+                    if (sampleId == ii)
+                        soundPool.play(ii, 1f, 1f, 100, 0, 1f);
+                }
+            });
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
     }
 
 }

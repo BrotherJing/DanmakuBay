@@ -34,12 +34,20 @@
     <string name="get_fail">获取失败</string>
     <string name="title_activity_danmaku_setting">DanmakuSettingActivity</string>
 
+    <!-- preferences -->
     <string name="danmaku_speed">弹幕速度</string>
     <string name="display_area">显示范围</string>
     <string name="home_only">仅桌面</string>
     <string name="all_app">所有应用</string>
     <string name="show_bg">显示背景</string>
+    <string name="preview">预览</string>
+    <string name="text_size">字体大小</string>
+    <string name="danmaku_height">弹幕高度</string>
     <string name="save">保存</string>
+
+    <string name="fast">快</string>
+    <string name="normal">中</string>
+    <string name="slow">慢</string>
 
     <string name="delete_word">删除</string>
 </resources>
