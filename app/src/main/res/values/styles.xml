@@ -1,0 +1,34 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar">
+        <item name="android:windowActionBarOverlay">false</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <!-- Customize your theme here. -->
+    </style>
+
+    <style name="list_item_main">
+        <item name="android:paddingBottom">10dp</item>
+        <item name="android:paddingTop">10dp</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:background">@drawable/btn_multistate</item>
+        <item name="android:textColor">@color/grey</item>
+    </style>
+
+    <style name="round_border_text">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:gravity">center</item>
+        <item name="android:background">@drawable/btn_round_border</item>
+    </style>
+
+    <style name="btn_round_rect_solid">
+        <item name="android:background">@drawable/btn_round_rect</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="text_in_grid">
+        <item name="android:padding">8dp</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+</resources>

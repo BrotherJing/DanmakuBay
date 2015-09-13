@@ -1,0 +1,55 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@android:color/white"
+    tools:context="com.brotherjing.danmakubay.activities.AccountSettingsActivity">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/app_color"
+        android:padding="20dp">
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/iv_avatar"
+            android:scaleType="fitCenter"
+            android:layout_marginBottom="6dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:visibility="invisible"
+            android:textSize="16sp"/>
+
+    </LinearLayout>
+
+    <GridLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:columnCount="2">
+        <TextView style="@style/text_in_grid"
+            android:text="@string/username"
+            android:textColor="@color/grey"/>
+        <TextView style="@style/text_in_grid" android:id="@+id/tv_username"/>
+        <TextView style="@style/text_in_grid"
+            android:textColor="@color/grey"
+            android:text="@string/nickname"/>
+        <TextView style="@style/text_in_grid" android:id="@+id/tv_nickname"/>
+    </GridLayout>
+
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        style="@style/btn_round_rect_solid"
+        android:text="@string/logout"
+        android:id="@+id/btn_logout"
+        />
+
+</LinearLayout>

@@ -1,0 +1,45 @@
+apply plugin: 'com.android.application'
+apply plugin: 'bugly'   //添加Bugly符号表插件
+
+android {
+    compileSdkVersion 22
+    buildToolsVersion "22.0.1"
+
+    defaultConfig {
+        applicationId "com.brotherjing.danmakubay"
+        minSdkVersion 15
+        targetSdkVersion 22
+        versionCode 1
+        versionName "1.2"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+bugly {
+    appId = BUGLY_APPID    //注册时分配的App ID
+    appKey = BUGLY_APPKEY  //注册时分配的App Key
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.android.support:appcompat-v7:22.1.1'
+    compile 'com.brotherjing:danmakuview:1.1.1'
+    compile 'com.google.code.gson:gson:2.3'
+    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.3'
+
+    compile 'com.tencent.bugly:crashreport:1.2.3.8'  //其中<version>替换为当前最新bugly版本号1.2.3.8
+
+    compile('de.greenrobot:greendao:2.0.0') {
+        exclude module: 'support-v4'
+        exclude module: 'junit'
+        exclude module: 'android-test'
+        exclude module: 'annotations'
+        exclude module: 'android'
+    }
+
+}

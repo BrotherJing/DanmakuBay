@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="unauthorized">未授权</string>
+    <string name="not_login">未登录</string>
+    <string name="login_success">登陆成功</string>
+    <string name="login_shanbay">扇贝网账号</string>
+    <string name="login_noaccunt">无账号</string>
+    <string name="login_type">请选择登录方式</string>
+    <string name="logout">退出登录</string>
+    <string name="login_cancel">登陆取消</string>
+
+    <string name="login_to_get_sentences">登陆以获取单词例句</string>
+
+</resources>

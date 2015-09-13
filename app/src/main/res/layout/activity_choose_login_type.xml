@@ -1,0 +1,45 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/app_color"
+    tools:context="com.brotherjing.danmakubay.activities.ChooseLoginType">
+
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:id="@+id/ll_login_type">
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:text="@string/login_type"
+            android:gravity="center_horizontal"
+            android:layout_marginBottom="60dp"
+            />
+
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginBottom="20dp"
+            android:text="@string/login_noaccunt"
+            android:id="@+id/btn_login_noaccount"
+            style="@style/round_border_text"/>
+
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="20dp"
+            android:text="@string/login_shanbay"
+            android:id="@+id/btn_login_shanbay"
+            style="@style/round_border_text"/>
+
+    </LinearLayout>
+
+
+</RelativeLayout>
