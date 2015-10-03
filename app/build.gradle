@@ -14,15 +14,18 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 }
 
 bugly {
-    appId = BUGLY_APPID    //注册时分配的App ID
-    appKey = BUGLY_APPKEY  //注册时分配的App Key
+    appId = project.BUGLY_APPID    //注册时分配的App ID
+    appKey = project.BUGLY_APPKEY  //注册时分配的App Key
+    execute = true
+    upload = true
+    outputDir = 'E:\\AndroidProjects\\DanmakuBay'
 }
 
 dependencies {
