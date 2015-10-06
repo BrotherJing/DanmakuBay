@@ -11,12 +11,16 @@ android {
         targetSdkVersion 22
         versionCode 1
         versionName "1.2"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+    packagingOptions {
+        exclude 'LICENSE.txt'
     }
 }
 
@@ -30,7 +34,7 @@ bugly {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:22.1.1'
+    compile 'com.android.support:appcompat-v7:22.0.0'
     compile 'com.brotherjing:danmakuview:1.1.1'
     compile 'com.google.code.gson:gson:2.3'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.3'
@@ -45,4 +49,6 @@ dependencies {
         exclude module: 'android'
     }
 
+    compile 'com.android.support.test.espresso:espresso-core:2.1'
+    compile 'com.android.support.test:runner:0.2'
 }
