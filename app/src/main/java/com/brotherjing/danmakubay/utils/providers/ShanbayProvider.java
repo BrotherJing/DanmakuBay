@@ -1,9 +1,15 @@
 package com.brotherjing.danmakubay.utils.providers;
 
+import android.content.Context;
+
+import com.android.volley.Request;
+import com.android.volley.Response;
 import com.brotherjing.danmakubay.api.API_SPF;
 import com.brotherjing.danmakubay.api.API_URL;
-import com.brotherjing.danmakubay.utils.CrossyHttpClient;
+import com.brotherjing.danmakubay.utils.network.CrossyHttpClient;
 import com.brotherjing.danmakubay.utils.DataUtil;
+import com.brotherjing.danmakubay.utils.network.GsonRequest;
+import com.brotherjing.danmakubay.utils.network.VolleyClient;
 import com.brotherjing.danmakubay.utils.beans.SentenceBean;
 import com.brotherjing.danmakubay.utils.beans.SentenceResponse;
 import com.brotherjing.danmakubay.utils.beans.ShanbayResponse;
@@ -17,7 +23,9 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Brotherjing on 2015/8/15.
@@ -34,10 +42,24 @@ public class ShanbayProvider {
         return response.getWordBean();
     }
 
+    public void getWord(Context context,String word,Response.Listener<WordResponse> listener,Response.ErrorListener errorListener){
+        GsonRequest<WordResponse> request = new GsonRequest<WordResponse>(Request.Method.GET,API_URL.URL_SEARCH_WORD+word,WordResponse.class,listener,errorListener);
+        request.putHeader("Cookie", DataUtil.getString(API_SPF.SPF_TOKEN, API_SPF.ITEM_COOKIES));
+        VolleyClient.getInstance(context).addRequest(request);
+    }
+
     public UserInfo getUserInfo(){
         return CrossyHttpClient.getBean(API_URL.URL_USER_INFO + "?" +
                         API_URL.SUFFIX_ACCESS_TOKEN + DataUtil.getString(API_SPF.SPF_TOKEN, API_SPF.ITEM_ACCESS_TOKEN),
                 DataUtil.getString(API_SPF.SPF_TOKEN, API_SPF.ITEM_COOKIES), UserInfo.class);
+    }
+
+    public void getUserInfo(Context context,Response.Listener<UserInfo> listener,Response.ErrorListener errorListener){
+        GsonRequest<UserInfo> request = new GsonRequest<>(Request.Method.GET,API_URL.URL_USER_INFO + "?" +
+                API_URL.SUFFIX_ACCESS_TOKEN + DataUtil.getString(API_SPF.SPF_TOKEN, API_SPF.ITEM_ACCESS_TOKEN),
+                UserInfo.class,listener,errorListener);
+        request.putHeader("Cookie",DataUtil.getString(API_SPF.SPF_TOKEN, API_SPF.ITEM_COOKIES));
+        VolleyClient.getInstance(context).addRequest(request);
     }
 
     public List<SentenceBean> getSentences(long word_id){
@@ -46,6 +68,13 @@ public class ShanbayProvider {
                 SentenceResponse.class);
         if(response.getStatus_code()!=0)return null;
         return response.getList();
+    }
+
+    public void getSentences(Context context,long word_id,Response.Listener<SentenceResponse> listener,Response.ErrorListener errorListener){
+        GsonRequest<SentenceResponse> request = new GsonRequest<SentenceResponse>(Request.Method.GET,API_URL.URL_GET_SENTENCE + word_id + "&" + API_URL.SUFFIX_ACCESS_TOKEN +
+                DataUtil.getString(API_SPF.SPF_TOKEN, API_SPF.ITEM_ACCESS_TOKEN),SentenceResponse.class,listener,errorListener);
+        request.putHeader("Cookie",DataUtil.getString(API_SPF.SPF_TOKEN, API_SPF.ITEM_COOKIES));
+        VolleyClient.getInstance(context).addRequest(request);
     }
 
     public boolean addNewWord(long id){
@@ -58,6 +87,14 @@ public class ShanbayProvider {
         ShanbayResponse response = new Gson().fromJson(result,ShanbayResponse.class);
         if(response.getStatus_code()!=0)return false;
         return true;
+    }
+
+    public void addNewWord(Context context,long id,Response.Listener<ShanbayResponse> listener,Response.ErrorListener errorListener){
+        GsonRequest<ShanbayResponse> request = new GsonRequest<>(Request.Method.POST,API_URL.URL_ADD_WORD+"?"+API_URL.SUFFIX_ACCESS_TOKEN+
+                DataUtil.getString(API_SPF.SPF_TOKEN,API_SPF.ITEM_ACCESS_TOKEN),ShanbayResponse.class,listener,errorListener);
+        request.putHeader("Cookie",DataUtil.getString(API_SPF.SPF_TOKEN,API_SPF.ITEM_COOKIES));
+        request.putParam("id", id + "");
+        VolleyClient.getInstance(context).addRequest(request);
     }
 
     public Word from(WordBean wordBean){

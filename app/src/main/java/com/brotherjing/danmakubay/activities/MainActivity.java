@@ -10,6 +10,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.brotherjing.danmakubay.GlobalEnv;
 import com.brotherjing.danmakubay.R;
 import com.brotherjing.danmakubay.api.API_SPF;
@@ -86,7 +88,8 @@ public class MainActivity extends BasicActionBarActivity implements View.OnClick
 
         String userinforaw = DataUtil.getString(API_SPF.SPF_TOKEN, API_SPF.ITEM_USERINFO, null);
         if(GlobalEnv.isLogin()&&userinforaw==null&&(flag&NO_NETWORK)==0){
-            new GetUserInfoTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            //new GetUserInfoTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            getUserInfo();
         }else if(userinforaw!=null){
             userInfo = new Gson().fromJson(userinforaw,UserInfo.class);
             refreshView();
@@ -196,6 +199,26 @@ public class MainActivity extends BasicActionBarActivity implements View.OnClick
                 refreshView();
             }
         }
+    }
+
+    private void getUserInfo(){
+        provider.getUserInfo(this, new Response.Listener<UserInfo>() {
+            @Override
+            public void onResponse(UserInfo response) {
+                userInfo = response;
+                if(userInfo!=null){
+                    DataUtil.putString(API_SPF.SPF_TOKEN, API_SPF.ITEM_USERINFO, new Gson().toJson(userInfo));
+                    refreshView();
+                }else {
+                    Toast.makeText(MainActivity.this,R.string.not_login,Toast.LENGTH_SHORT).show();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(MainActivity.this,R.string.not_login,Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private class GetUserInfoTask extends AsyncTask<Void,Void,Result>{

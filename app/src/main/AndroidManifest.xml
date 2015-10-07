@@ -82,6 +82,10 @@
             android:name=".activities.AccountSettingsActivity"
             android:label="@string/title_activity_account_settings" >
         </activity>
+        <activity
+            android:name=".activities.VolleyTestActivity"
+            android:label="@string/title_activity_volley_test" >
+        </activity>
     </application>
 
 </manifest>

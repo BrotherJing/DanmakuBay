@@ -25,6 +25,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.brotherjing.danmakubay.App;
 import com.brotherjing.danmakubay.GlobalEnv;
 import com.brotherjing.danmakubay.R;
@@ -32,7 +34,9 @@ import com.brotherjing.danmakubay.utils.Result;
 import com.brotherjing.danmakubay.utils.SoundManager;
 import com.brotherjing.danmakubay.utils.WordDBManager;
 import com.brotherjing.danmakubay.utils.beans.SentenceBean;
+import com.brotherjing.danmakubay.utils.beans.ShanbayResponse;
 import com.brotherjing.danmakubay.utils.beans.WordBean;
+import com.brotherjing.danmakubay.utils.beans.WordResponse;
 import com.brotherjing.danmakubay.utils.providers.ShanbayProvider;
 import com.brotherjing.simpledanmakuview.DanmakuView;
 import com.greendao.dao.Word;
@@ -143,6 +147,7 @@ public class FloatToolService extends Service {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if(TextUtils.isEmpty(s)){
+                    tvDesc.setText("");
                     tvDesc.setVisibility(View.GONE);
                     tvAdd.setVisibility(View.GONE);
                 }
@@ -161,7 +166,8 @@ public class FloatToolService extends Service {
                     if (TextUtils.isEmpty(et.getText())) return true;
                     tvDesc.setVisibility(View.VISIBLE);
                     tvAdd.setVisibility(View.VISIBLE);
-                    new SearchWordTask().execute(et.getText().toString());
+                    //new SearchWordTask().execute(et.getText().toString());
+                    searchWord(et.getText().toString());
                 }
                 return true;
             }
@@ -170,8 +176,9 @@ public class FloatToolService extends Service {
         tvAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(searchResult==null)return;
-                new AddWordTask().execute();
+                if (searchResult == null) return;
+                //new AddWordTask().execute();
+                addWord();
             }
         });
 
@@ -219,12 +226,11 @@ public class FloatToolService extends Service {
                             if (mainLayout.getVisibility() == View.GONE) {
                                 mainLayout.setVisibility(View.VISIBLE);
                                 layoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
-                            }
-                            else {
+                            } else {
                                 mainLayout.setVisibility(View.GONE);
-                                layoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL|WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+                                layoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
                             }
-                            windowManager.updateViewLayout(floatLayout,layoutParams);
+                            windowManager.updateViewLayout(floatLayout, layoutParams);
                         }
                         break;
                 }
@@ -244,63 +250,66 @@ public class FloatToolService extends Service {
         }
     }
 
-    private class AddWordTask extends AsyncTask<Void,Void,Result>{
-        @Override
-        protected Result doInBackground(Void... params) {
-            if(GlobalEnv.isLogin()){
-                if(!provider.addNewWord(searchResult.getId())){
-                    return new Result(false,getString(R.string.word_not_added_remote));
+    private void saveWord(){
+        final Word word = provider.from(searchResult);
+        if(!wordDBManager.ifExist(word)){
+            SoundManager.downloadSound(this, word, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String file_dir) {
+                    if (!TextUtils.isEmpty(file_dir)) {
+                        word.setAudio_local(file_dir);
+                        wordDBManager.addWord(word);
+                        wordDBManager.addSentences(sentenceBeanList, word);
+                        Toast.makeText(FloatToolService.this, R.string.add_success, Toast.LENGTH_SHORT).show();
+                    }
                 }
-            }
-            Word word = provider.from(searchResult);
-            if(!wordDBManager.ifExist(word)){
-                String file_dir = SoundManager.downloadSound(word);
-                if(!TextUtils.isEmpty(file_dir)){
-                    word.setAudio_local(file_dir);
-                    wordDBManager.addWord(word);
-                    wordDBManager.addSentences(sentenceBeanList, word);
-                    return new Result(true,getString(R.string.add_success));
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Toast.makeText(FloatToolService.this, R.string.add_fail, Toast.LENGTH_SHORT).show();
                 }
-            }
-            return new Result(false,getString(R.string.add_fail));
-        }
-
-        @Override
-        protected void onPostExecute(Result result) {
-            super.onPostExecute(result);
-                Toast.makeText(FloatToolService.this,result.getMsg(),Toast.LENGTH_SHORT).show();
+            });
         }
     }
 
-    private class SearchWordTask extends AsyncTask<String,Void,Result> {
-        WordBean wordBean = null;
-        @Override
-        protected Result doInBackground(String... params) {
-            try {
-                /*wordBean = provider.getWord(params[0]);
-                if(wordBean!=null) {
-                    sentenceBeanList = provider.getSentences(wordBean.getId());
-                    if(sentenceBeanList!=null)
-                        return new Result(true, "");
-                }*/
-                wordBean = provider.getWord(params[0]);
-                if(wordBean !=null)return new Result(true, "");
-            }catch (Exception ex) {
-                ex.printStackTrace();
-            }
-            return new Result(false, getString(R.string.get_fail));
+    private void addWord(){
+        if(GlobalEnv.isLogin()){
+            provider.addNewWord(this, searchResult.getId(), new Response.Listener<ShanbayResponse>() {
+                @Override
+                public void onResponse(ShanbayResponse response) {
+                    if (response.getStatus_code() == 0) {
+                        saveWord();
+                        return;
+                    }
+                    Toast.makeText(FloatToolService.this, R.string.add_fail, Toast.LENGTH_SHORT).show();
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Toast.makeText(FloatToolService.this, R.string.add_fail, Toast.LENGTH_SHORT).show();
+                }
+            });
         }
+    }
 
-        @Override
-        protected void onPostExecute(Result result) {
-            super.onPostExecute(result);
-            if(result.isSuccess()){
-                tvDesc.setVisibility(View.VISIBLE);
-                tvDesc.setText(wordBean.getPronunciation() + "\n" + wordBean.getDefinition());
-                tvAdd.setVisibility(View.VISIBLE);
-                searchResult = wordBean;
+    private void searchWord(String word){
+        provider.getWord(this, word, new Response.Listener<WordResponse>() {
+            @Override
+            public void onResponse(WordResponse response) {
+                searchResult = response.getWordBean();
+                inflateView();
             }
-            else Toast.makeText(FloatToolService.this,result.getMsg(),Toast.LENGTH_SHORT).show();
-        }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(FloatToolService.this, R.string.get_fail, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void inflateView(){
+        tvDesc.setVisibility(View.VISIBLE);
+        tvDesc.setText(searchResult.getPronunciation() + "\n" + searchResult.getDefinition());
+        tvAdd.setVisibility(View.VISIBLE);
     }
 }

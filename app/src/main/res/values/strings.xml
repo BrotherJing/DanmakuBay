@@ -50,4 +50,5 @@
     <string name="title_activity_account_settings">账户设置</string>
     <string name="nickname">昵称</string>
     <string name="username">用户名</string>
+    <string name="title_activity_volley_test">VolleyTestActivity</string>
 </resources>

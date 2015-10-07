@@ -3,7 +3,7 @@ package com.brotherjing.danmakubay;
 import android.app.Application;
 
 import com.brotherjing.danmakubay.api.API_SPF;
-import com.brotherjing.danmakubay.utils.CrossyHttpClient;
+import com.brotherjing.danmakubay.utils.network.CrossyHttpClient;
 import com.brotherjing.danmakubay.utils.DataUtil;
 import com.brotherjing.danmakubay.utils.ImageUtil;
 import com.brotherjing.danmakubay.utils.WordDBManager;

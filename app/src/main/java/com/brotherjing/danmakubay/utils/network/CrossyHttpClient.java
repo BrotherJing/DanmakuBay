@@ -1,4 +1,4 @@
-package com.brotherjing.danmakubay.utils;
+package com.brotherjing.danmakubay.utils.network;
 
 import android.util.Log;
 
