@@ -22,20 +22,12 @@ public class ChooseLoginType extends Activity {
         btn_noaccount = f(R.id.btn_login_noaccount);
         btn_shanbay = f(R.id.btn_login_shanbay);
 
-        btn_noaccount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                GlobalEnv.setLogin(false);
-                startActivity(new Intent(ChooseLoginType.this,MainActivity.class));
-                finish();
-            }
+        btn_noaccount.setOnClickListener(v -> {
+            GlobalEnv.setLogin(false);
+            startActivity(new Intent(ChooseLoginType.this,MainActivity.class));
+            finish();
         });
-        btn_shanbay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivityForResult(new Intent(ChooseLoginType.this, AuthLoginActivity.class), REQ_CODE_LOGIN);
-            }
-        });
+        btn_shanbay.setOnClickListener(v -> startActivityForResult(new Intent(ChooseLoginType.this, AuthLoginActivity.class), REQ_CODE_LOGIN));
     }
 
     private <T extends View>T f(int resId){

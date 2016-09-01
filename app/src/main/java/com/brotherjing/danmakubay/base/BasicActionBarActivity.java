@@ -6,12 +6,13 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.brotherjing.danmakubay.R;
+import com.brotherjing.danmakubay.activities.BaseActivity;
 import com.brotherjing.danmakubay.utils.ViewUtil;
 
 /**
  * Created by Brotherjing on 2015/9/13.
  */
-public class BasicActionBarActivity extends Activity {
+public class BasicActionBarActivity extends BaseActivity {
 
     protected ActionBar actionBar;
 

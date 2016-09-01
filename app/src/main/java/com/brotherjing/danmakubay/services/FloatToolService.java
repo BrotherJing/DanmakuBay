@@ -1,50 +1,43 @@
 package com.brotherjing.danmakubay.services;
 
-import android.app.Service;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.PixelFormat;
-import android.os.AsyncTask;
 import android.os.IBinder;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.brotherjing.danmakubay.App;
 import com.brotherjing.danmakubay.GlobalEnv;
 import com.brotherjing.danmakubay.R;
-import com.brotherjing.danmakubay.utils.Result;
 import com.brotherjing.danmakubay.utils.SoundManager;
 import com.brotherjing.danmakubay.utils.WordDBManager;
 import com.brotherjing.danmakubay.utils.beans.SentenceBean;
 import com.brotherjing.danmakubay.utils.beans.ShanbayResponse;
 import com.brotherjing.danmakubay.utils.beans.WordBean;
 import com.brotherjing.danmakubay.utils.beans.WordResponse;
+import com.brotherjing.danmakubay.utils.network.BaseSubscriber;
+import com.brotherjing.danmakubay.utils.network.ShanbayClient;
 import com.brotherjing.danmakubay.utils.providers.ShanbayProvider;
-import com.brotherjing.simpledanmakuview.DanmakuView;
 import com.greendao.dao.Word;
 
-import java.nio.channels.spi.SelectorProvider;
 import java.util.List;
 
-public class FloatToolService extends Service {
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+
+public class FloatToolService extends BaseService {
 
     View floatLayout;
     LinearLayout mainLayout;
@@ -253,58 +246,69 @@ public class FloatToolService extends Service {
     private void saveWord(){
         final Word word = provider.from(searchResult);
         if(!wordDBManager.ifExist(word)){
-            SoundManager.downloadSound(this, word, new Response.Listener<String>() {
-                @Override
-                public void onResponse(String file_dir) {
-                    if (!TextUtils.isEmpty(file_dir)) {
-                        word.setAudio_local(file_dir);
-                        wordDBManager.addWord(word);
-                        wordDBManager.addSentences(sentenceBeanList, word);
-                        Toast.makeText(FloatToolService.this, R.string.add_success, Toast.LENGTH_SHORT).show();
+            addSubscription(SoundManager.downloadAudio(word)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new BaseSubscriber<String>() {
+                    @Override
+                    public void onNext(String file_dir) {
+                        if (!TextUtils.isEmpty(file_dir)) {
+                            word.setAudio_local(file_dir);
+                            wordDBManager.addWord(word);
+                            wordDBManager.addSentences(sentenceBeanList, word);
+                            Toast.makeText(FloatToolService.this, R.string.add_success, Toast.LENGTH_SHORT).show();
+                        }
                     }
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Toast.makeText(FloatToolService.this, R.string.add_fail, Toast.LENGTH_SHORT).show();
-                }
-            });
+
+                    @Override
+                    public void onError(Throwable e) {
+                        super.onError(e);
+                        Toast.makeText(FloatToolService.this, R.string.add_fail, Toast.LENGTH_SHORT).show();
+                    }
+                }));
         }
     }
 
     private void addWord(){
         if(GlobalEnv.isLogin()){
-            provider.addNewWord(this, searchResult.getId(), new Response.Listener<ShanbayResponse>() {
-                @Override
-                public void onResponse(ShanbayResponse response) {
-                    if (response.getStatus_code() == 0) {
-                        saveWord();
-                        return;
+            addSubscription(ShanbayClient.getInstance().addNewWord(searchResult.getId())
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new BaseSubscriber<ShanbayResponse>() {
+                    @Override
+                    public void onNext(ShanbayResponse shanbayResponse) {
+                        if (shanbayResponse.getStatus_code() == 0) {
+                            saveWord();
+                            return;
+                        }
+                        Toast.makeText(FloatToolService.this, R.string.add_fail, Toast.LENGTH_SHORT).show();
                     }
-                    Toast.makeText(FloatToolService.this, R.string.add_fail, Toast.LENGTH_SHORT).show();
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Toast.makeText(FloatToolService.this, R.string.add_fail, Toast.LENGTH_SHORT).show();
-                }
-            });
+
+                    @Override
+                    public void onError(Throwable e) {
+                        super.onError(e);
+                        Toast.makeText(FloatToolService.this, R.string.add_fail, Toast.LENGTH_SHORT).show();
+                    }
+                }));
         }
     }
 
     private void searchWord(String word){
-        provider.getWord(this, word, new Response.Listener<WordResponse>() {
-            @Override
-            public void onResponse(WordResponse response) {
-                searchResult = response.getWordBean();
-                inflateView();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(FloatToolService.this, R.string.get_fail, Toast.LENGTH_SHORT).show();
-            }
-        });
+        addSubscription(ShanbayClient.getInstance().getWord(word)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new BaseSubscriber<WordResponse>() {
+                @Override
+                public void onNext(WordResponse wordResponse) {
+                    searchResult = wordResponse.getWordBean();
+                    inflateView();
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    super.onError(e);
+                    Toast.makeText(FloatToolService.this, R.string.get_fail, Toast.LENGTH_SHORT).show();
+                }
+            }));
     }
 
     private void inflateView(){

@@ -1,8 +1,5 @@
 package com.brotherjing.danmakubay.activities;
 
-import android.app.ActionBar;
-import android.app.Activity;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -12,26 +9,27 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.brotherjing.danmakubay.App;
 import com.brotherjing.danmakubay.GlobalEnv;
 import com.brotherjing.danmakubay.R;
 import com.brotherjing.danmakubay.base.BasicActionBarActivity;
-import com.brotherjing.danmakubay.utils.Result;
 import com.brotherjing.danmakubay.utils.SoundManager;
 import com.brotherjing.danmakubay.utils.TextUtil;
-import com.brotherjing.danmakubay.utils.ViewUtil;
 import com.brotherjing.danmakubay.utils.WordDBManager;
 import com.brotherjing.danmakubay.utils.beans.SentenceBean;
 import com.brotherjing.danmakubay.utils.beans.SentenceResponse;
 import com.brotherjing.danmakubay.utils.beans.ShanbayResponse;
 import com.brotherjing.danmakubay.utils.beans.WordBean;
 import com.brotherjing.danmakubay.utils.beans.WordResponse;
+import com.brotherjing.danmakubay.utils.network.BaseSubscriber;
+import com.brotherjing.danmakubay.utils.network.ShanbayClient;
 import com.brotherjing.danmakubay.utils.providers.ShanbayProvider;
 import com.greendao.dao.Word;
 
 import java.util.List;
+
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class AddWordActivity extends BasicActionBarActivity {
 
@@ -103,78 +101,93 @@ public class AddWordActivity extends BasicActionBarActivity {
 
     private void addWord(){
         if(GlobalEnv.isLogin()){
-            provider.addNewWord(this, searchResult.getId(), new Response.Listener<ShanbayResponse>() {
-                @Override
-                public void onResponse(ShanbayResponse response) {
-                    if(response.getStatus_code()==0){
-                        saveWord();
-                        return;
+            addSubscription(ShanbayClient.getInstance().addNewWord(searchResult.getId())
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new BaseSubscriber<ShanbayResponse>() {
+                    @Override
+                    public void onNext(ShanbayResponse shanbayResponse) {
+                        if(shanbayResponse.getStatus_code()==0){
+                            saveWord();
+                            return;
+                        }
+                        Toast.makeText(AddWordActivity.this,R.string.add_fail,Toast.LENGTH_SHORT).show();
                     }
-                    Toast.makeText(AddWordActivity.this,R.string.add_fail,Toast.LENGTH_SHORT).show();
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Toast.makeText(AddWordActivity.this,R.string.add_fail,Toast.LENGTH_SHORT).show();
-                }
-            });
+
+                    @Override
+                    public void onError(Throwable e) {
+                        super.onError(e);
+                        Toast.makeText(AddWordActivity.this,R.string.add_fail,Toast.LENGTH_SHORT).show();
+                    }
+                }));
         }
     }
 
     private void saveWord(){
         final Word word = provider.from(searchResult);
         if(!wordDBManager.ifExist(word)){
-            SoundManager.downloadSound(this, word, new Response.Listener<String>() {
-                @Override
-                public void onResponse(String file_dir) {
-                    if(!TextUtils.isEmpty(file_dir)){
-                        word.setAudio_local(file_dir);
-                        wordDBManager.addWord(word);
-                        wordDBManager.addSentences(sentenceBeanList, word);
-                        Toast.makeText(AddWordActivity.this,R.string.add_success,Toast.LENGTH_SHORT).show();
+            addSubscription(SoundManager.downloadAudio(word)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new BaseSubscriber<String>() {
+                    @Override
+                    public void onNext(String file_dir) {
+                        if(!TextUtils.isEmpty(file_dir)){
+                            word.setAudio_local(file_dir);
+                            wordDBManager.addWord(word);
+                            wordDBManager.addSentences(sentenceBeanList, word);
+                            Toast.makeText(AddWordActivity.this,R.string.add_success,Toast.LENGTH_SHORT).show();
+                        }
                     }
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Toast.makeText(AddWordActivity.this,R.string.add_fail,Toast.LENGTH_SHORT).show();
-                }
-            });
+
+                    @Override
+                    public void onError(Throwable e) {
+                        super.onError(e);
+                        Toast.makeText(AddWordActivity.this,R.string.add_fail,Toast.LENGTH_SHORT).show();
+                    }
+                }));
         }
     }
 
     private void searchWord(String word){
-        provider.getWord(this, word, new Response.Listener<WordResponse>() {
-            @Override
-            public void onResponse(WordResponse response) {
-                searchResult = response.getWordBean();
-                if (GlobalEnv.isLogin()) {
-                    getSentences(searchResult.getId());
-                } else {
-                    inflateView();
+        addSubscription(ShanbayClient.getInstance().getWord(word)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new BaseSubscriber<WordResponse>() {
+                @Override
+                public void onNext(WordResponse wordResponse) {
+                    searchResult = wordResponse.getWordBean();
+                    if (GlobalEnv.isLogin()) {
+                        getSentences(searchResult.getId());
+                    } else {
+                        inflateView();
+                    }
                 }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(AddWordActivity.this, R.string.get_fail, Toast.LENGTH_SHORT).show();
-            }
-        });
+
+                @Override
+                public void onError(Throwable e) {
+                    super.onError(e);
+                    Toast.makeText(AddWordActivity.this, R.string.get_fail, Toast.LENGTH_SHORT).show();
+                }
+            }));
     }
 
     private void getSentences(long word_id){
-        provider.getSentences(this, word_id, new Response.Listener<SentenceResponse>() {
-            @Override
-            public void onResponse(SentenceResponse response) {
-                sentenceBeanList = response.getList();
-                inflateView();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(AddWordActivity.this, R.string.get_fail, Toast.LENGTH_SHORT).show();
-            }
-        });
+        addSubscription(ShanbayClient.getInstance().getSentences(word_id)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new BaseSubscriber<SentenceResponse>() {
+                @Override
+                public void onNext(SentenceResponse sentenceResponse) {
+                    sentenceBeanList = sentenceResponse.getList();
+                    inflateView();
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    super.onError(e);
+                    Toast.makeText(AddWordActivity.this, R.string.get_fail, Toast.LENGTH_SHORT).show();
+                }
+            }));
     }
 
     private void inflateView(){

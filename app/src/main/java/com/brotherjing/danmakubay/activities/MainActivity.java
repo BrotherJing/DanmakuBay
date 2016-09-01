@@ -3,15 +3,12 @@ package com.brotherjing.danmakubay.activities;
 import android.app.ActivityManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.brotherjing.danmakubay.GlobalEnv;
 import com.brotherjing.danmakubay.R;
 import com.brotherjing.danmakubay.api.API_SPF;
@@ -20,16 +17,19 @@ import com.brotherjing.danmakubay.services.FloatToolService;
 import com.brotherjing.danmakubay.services.FloatWindowService;
 import com.brotherjing.danmakubay.utils.CheckNetwork;
 import com.brotherjing.danmakubay.utils.DataUtil;
-import com.brotherjing.danmakubay.utils.Result;
 import com.brotherjing.danmakubay.utils.beans.UserInfo;
+import com.brotherjing.danmakubay.utils.network.BaseSubscriber;
+import com.brotherjing.danmakubay.utils.network.ShanbayClient;
 import com.brotherjing.danmakubay.utils.providers.ShanbayProvider;
 import com.google.gson.Gson;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
-import com.tencent.bugly.crashreport.CrashReport;
 
 import java.util.List;
+
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 
 public class MainActivity extends BasicActionBarActivity implements View.OnClickListener{
@@ -45,8 +45,6 @@ public class MainActivity extends BasicActionBarActivity implements View.OnClick
     private TextView tvName,tvOpenWindow,tvOpenFindWindow,tvSetDanmaku,tvAddWord,tvWordList;
 
     private UserInfo userInfo;
-
-    private ShanbayProvider provider;
 
     private int flag;
 
@@ -84,11 +82,9 @@ public class MainActivity extends BasicActionBarActivity implements View.OnClick
     private void initData(){
         flag = 0;
         if(new CheckNetwork(this).getConnectionType()==0)flag|=NO_NETWORK;
-        provider = new ShanbayProvider();
 
         String userinforaw = DataUtil.getString(API_SPF.SPF_TOKEN, API_SPF.ITEM_USERINFO, null);
         if(GlobalEnv.isLogin()&&userinforaw==null&&(flag&NO_NETWORK)==0){
-            //new GetUserInfoTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             getUserInfo();
         }else if(userinforaw!=null){
             userInfo = new Gson().fromJson(userinforaw,UserInfo.class);
@@ -202,43 +198,25 @@ public class MainActivity extends BasicActionBarActivity implements View.OnClick
     }
 
     private void getUserInfo(){
-        provider.getUserInfo(this, new Response.Listener<UserInfo>() {
-            @Override
-            public void onResponse(UserInfo response) {
-                userInfo = response;
-                if(userInfo!=null){
-                    DataUtil.putString(API_SPF.SPF_TOKEN, API_SPF.ITEM_USERINFO, new Gson().toJson(userInfo));
-                    refreshView();
-                }else {
+        addSubscription(ShanbayClient.getInstance().getUserInfo().subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new BaseSubscriber<UserInfo>() {
+                @Override
+                public void onNext(UserInfo userInfo) {
+                    if(userInfo!=null){
+                        MainActivity.this.userInfo = userInfo;
+                        DataUtil.putString(API_SPF.SPF_TOKEN, API_SPF.ITEM_USERINFO, new Gson().toJson(userInfo));
+                        refreshView();
+                    }else {
+                        Toast.makeText(MainActivity.this,R.string.not_login,Toast.LENGTH_SHORT).show();
+                    }
+                }
+                @Override
+                public void onError(Throwable e) {
+                    super.onError(e);
                     Toast.makeText(MainActivity.this,R.string.not_login,Toast.LENGTH_SHORT).show();
                 }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(MainActivity.this,R.string.not_login,Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private class GetUserInfoTask extends AsyncTask<Void,Void,Result>{
-        @Override
-        protected void onPostExecute(Result result) {
-            super.onPostExecute(result);
-            if(result.isSuccess()){
-                DataUtil.putString(API_SPF.SPF_TOKEN, API_SPF.ITEM_USERINFO, new Gson().toJson(userInfo));
-                //Toast.makeText(MainActivity.this,userInfo.getUsername(),Toast.LENGTH_SHORT).show();
-                refreshView();
-            }else{
-                Toast.makeText(MainActivity.this,R.string.not_login,Toast.LENGTH_SHORT).show();
-            }
-        }
-
-        @Override
-        protected Result doInBackground(Void... params) {
-            userInfo = provider.getUserInfo();
-            return userInfo==null?new Result(false,""):new Result(true,"");
-        }
+            }));
     }
 
     private static class AnimateListener extends SimpleImageLoadingListener {

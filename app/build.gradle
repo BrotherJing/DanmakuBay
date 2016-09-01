@@ -1,48 +1,64 @@
 apply plugin: 'com.android.application'
-apply plugin: 'bugly'   //Ìí¼ÓBugly·ûºÅ±í²å¼þ
+apply plugin: 'me.tatarka.retrolambda'
 
 android {
-    compileSdkVersion 22
-    buildToolsVersion "22.0.1"
+    compileSdkVersion 24
+    buildToolsVersion "24.0.0"
 
     defaultConfig {
         applicationId "com.brotherjing.danmakubay"
         minSdkVersion 15
-        targetSdkVersion 22
+        targetSdkVersion 19
         versionCode 1
         versionName "1.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+
     buildTypes {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
     packagingOptions {
         exclude 'LICENSE.txt'
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
-bugly {
-    appId = project.BUGLY_APPID    //×¢²áÊ±·ÖÅäµÄApp ID
-    appKey = project.BUGLY_APPKEY  //×¢²áÊ±·ÖÅäµÄApp Key
+/*bugly {
+    appId = project.BUGLY_APPID    //×¢ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½App ID
+    appKey = project.BUGLY_APPKEY  //×¢ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½App Key
     execute = true
     upload = true
     outputDir = 'E:\\AndroidProjects\\DanmakuBay'
+}*/
+
+ext {
+    okhttp_version = "2.5.0"
+    retrofit_version = "2.0.0-beta2"
+    picasso_version = "2.5.2"
+    gson_version = "2.4"
+    junit_version = "4.12"
+    rx_java_version = "1.0.15"
+    rx_android_version = "1.1.0"
+    okhttp_logging_version = "2.7.0"
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
-    compile project(':volley')
+    //compile project(':volley')
 
-    compile 'com.android.support:appcompat-v7:22.0.0'
+    compile 'com.android.support:support-v4:24.0.0'
+    compile 'com.android.support:appcompat-v7:24.0.0'
     compile 'com.brotherjing:danmakuview:1.1.1'
-    compile 'com.google.code.gson:gson:2.3'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.3'
-
-    compile 'com.tencent.bugly:crashreport:1.2.3.8'  //ÆäÖÐ<version>Ìæ»»Îªµ±Ç°×îÐÂbugly°æ±¾ºÅ1.2.3.8
 
     compile('de.greenrobot:greendao:2.0.0') {
         exclude module: 'support-v4'
@@ -54,4 +70,21 @@ dependencies {
 
     compile 'com.android.support.test.espresso:espresso-core:2.1'
     compile 'com.android.support.test:runner:0.2'
+
+    compile "com.squareup.okhttp:okhttp:$okhttp_version"
+
+    compile "com.squareup.retrofit:retrofit:$retrofit_version"
+    compile "com.squareup.retrofit:converter-gson:$retrofit_version"
+    compile ('com.squareup.retrofit:converter-simplexml:2.0.0-beta2') {
+        exclude group: 'xpp3', module: 'xpp3'
+        exclude group: 'stax', module: 'stax-api'
+        exclude group: 'stax', module: 'stax'
+    }
+    compile "com.squareup.retrofit:adapter-rxjava:$retrofit_version"
+    compile "io.reactivex:rxjava:$rx_java_version"
+    compile "io.reactivex:rxandroid:$rx_android_version"
+    compile "com.squareup.picasso:picasso:$picasso_version"
+    compile "com.squareup.okhttp:logging-interceptor:$okhttp_logging_version"
+
+    compile "com.google.code.gson:gson:$gson_version"
 }

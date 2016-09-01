@@ -1,25 +1,22 @@
 package com.brotherjing.danmakubay.utils;
 
-import android.content.Context;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Environment;
 
-import com.android.volley.Response;
-import com.brotherjing.danmakubay.utils.beans.WordBean;
-import com.brotherjing.danmakubay.utils.network.SoundDownloadRequest;
-import com.brotherjing.danmakubay.utils.network.VolleyClient;
+import com.brotherjing.danmakubay.utils.network.ShanbayClient;
 import com.greendao.dao.Word;
-
-import org.apache.http.HttpConnection;
+import com.squareup.okhttp.ResponseBody;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+
+import rx.Observable;
+import rx.functions.Func1;
 
 /**
  * Created by Brotherjing on 2015/9/6.
@@ -36,9 +33,30 @@ public class SoundManager {
         soundPool = null;
     }
 
-    public static void downloadSound(Context context,Word word,Response.Listener<String> listener,Response.ErrorListener errorListener){
-        SoundDownloadRequest request = new SoundDownloadRequest(word,listener,errorListener);
-        VolleyClient.getInstance(context).addRequest(request);
+    public static Observable<String> downloadAudio(Word word){
+        return ShanbayClient.getInstance().downloadSound(word.getAudio())
+                .map(new Func1<ResponseBody, String>() {
+                    @Override
+                    public String call(ResponseBody responseBody) {
+                        String dir_str = Environment.getExternalStorageDirectory().getAbsolutePath()+"/sounds";
+                        String file_str = System.currentTimeMillis() + ".mp3";
+                        try {
+                            File dir = new File(dir_str);
+                            if (!dir.exists()) {
+                                dir.mkdir();
+                            }
+                            File file = new File(dir_str, file_str);
+                            file.createNewFile();
+
+                            OutputStream os = new FileOutputStream(file);
+                            os.write(responseBody.bytes());
+                            os.close();
+                        }catch (Exception ex){
+                            ex.printStackTrace();
+                        }
+                        return file_str;
+                    }
+                });
     }
 
     public static String downloadSound(Word word){

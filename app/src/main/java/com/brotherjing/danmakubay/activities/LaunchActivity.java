@@ -12,10 +12,15 @@ import com.brotherjing.danmakubay.utils.CheckNetwork;
 import com.brotherjing.danmakubay.utils.DataUtil;
 import com.brotherjing.danmakubay.utils.Result;
 import com.brotherjing.danmakubay.utils.beans.UserInfo;
+import com.brotherjing.danmakubay.utils.network.BaseSubscriber;
+import com.brotherjing.danmakubay.utils.network.ShanbayClient;
 import com.brotherjing.danmakubay.utils.providers.ShanbayProvider;
 import com.google.gson.Gson;
 
-public class LaunchActivity extends Activity {
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+
+public class LaunchActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,15 +37,26 @@ public class LaunchActivity extends Activity {
             startActivity(new Intent(this, MainActivity.class));
             finish();
         }
-        else if(DataUtil.getString(API_SPF.SPF_TOKEN, API_SPF.ITEM_COOKIES, null)!=null){
-            new GetUserInfoTask().execute();
+        else if(DataUtil.getString(API_SPF.SPF_TOKEN, API_SPF.ITEM_ACCOUNT, null)!=null){
+            //new GetUserInfoTask().execute();
+            addSubscription(ShanbayClient.getInstance().getUserInfo().subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new BaseSubscriber<UserInfo>() {
+                                @Override
+                                public void onNext(UserInfo userInfo) {
+                                    DataUtil.putString(API_SPF.SPF_TOKEN,API_SPF.ITEM_USERINFO,new Gson().toJson(userInfo));
+                                    GlobalEnv.setLogin(true);
+                                    startActivity(new Intent(LaunchActivity.this,MainActivity.class));
+                                    finish();
+                                }
+                            }));
         }else{
             startActivity(new Intent(this, ChooseLoginType.class));
             finish();
         }
     }
 
-    private class GetUserInfoTask extends AsyncTask<Void,Void,Result>{
+    /*private class GetUserInfoTask extends AsyncTask<Void,Void,Result>{
         @Override
         protected void onPostExecute(Result result) {
             super.onPostExecute(result);
@@ -62,6 +78,6 @@ public class LaunchActivity extends Activity {
             }
             return new Result(false,"");
         }
-    }
+    }*/
 
 }

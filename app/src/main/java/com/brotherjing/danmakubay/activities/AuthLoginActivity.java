@@ -20,6 +20,10 @@ import com.brotherjing.danmakubay.api.API_URL;
 import com.brotherjing.danmakubay.R;
 import com.brotherjing.danmakubay.utils.DataUtil;
 import com.brotherjing.danmakubay.utils.ViewUtil;
+import com.brotherjing.danmakubay.utils.beans.Account;
+import com.brotherjing.danmakubay.utils.network.ShanbayAPI;
+import com.brotherjing.danmakubay.utils.network.ShanbayClient;
+import com.google.gson.Gson;
 
 
 public class AuthLoginActivity extends Activity {
@@ -51,7 +55,7 @@ public class AuthLoginActivity extends Activity {
 
         cookieManager = CookieManager.getInstance();
 
-        login_url = String.format(API_URL.URL_AUTH, API_URL.APP_KEY, API_URL.URL_CALLBACK);
+        login_url = String.format(ShanbayAPI.URL_AUTH, ShanbayAPI.APP_KEY, ShanbayAPI.URL_CALLBACK);
         //Log.i("yj", login_url);
         webView.loadUrl(login_url);
     }
@@ -86,9 +90,12 @@ public class AuthLoginActivity extends Activity {
                 String args = url.split("#")[1];
                 if(args.startsWith("access_token")) {
                     String access_token = args.split("&")[0].split("=")[1];
-                    DataUtil.putString(API_SPF.SPF_TOKEN,API_SPF.ITEM_ACCESS_TOKEN,access_token);
+                    //DataUtil.putString(API_SPF.SPF_TOKEN,API_SPF.ITEM_ACCESS_TOKEN,access_token);
                     String cookies = cookieManager.getCookie(url);
-                    DataUtil.putString(API_SPF.SPF_TOKEN, API_SPF.ITEM_COOKIES, cookies);
+                    //DataUtil.putString(API_SPF.SPF_TOKEN, API_SPF.ITEM_COOKIES, cookies);
+                    Account account = new Account(cookies, access_token);
+                    ShanbayClient.setAccount(account);
+                    DataUtil.putString(API_SPF.SPF_TOKEN, API_SPF.ITEM_ACCOUNT, new Gson().toJson(account));
                     Toast.makeText(AuthLoginActivity.this,R.string.login_success,Toast.LENGTH_SHORT).show();
                     GlobalEnv.setLogin(true);
                     setResult(RESULT_OK);

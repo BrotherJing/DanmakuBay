@@ -10,6 +10,7 @@ public interface API_SPF {
     int SPEED_LEVEL_FAST = 2;
 
     String SPF_TOKEN = "spf_token";
+    String ITEM_ACCOUNT = "account";
     String ITEM_ACCESS_TOKEN = "access_token";
     String ITEM_COOKIES = "cookies";
     String ITEM_USERINFO = "userinfo";
