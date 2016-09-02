@@ -4,6 +4,7 @@ import android.app.ActivityManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -20,7 +21,6 @@ import com.brotherjing.danmakubay.utils.DataUtil;
 import com.brotherjing.danmakubay.utils.beans.UserInfo;
 import com.brotherjing.danmakubay.utils.network.BaseSubscriber;
 import com.brotherjing.danmakubay.utils.network.ShanbayClient;
-import com.brotherjing.danmakubay.utils.providers.ShanbayProvider;
 import com.google.gson.Gson;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
@@ -53,7 +53,7 @@ public class MainActivity extends BasicActionBarActivity implements View.OnClick
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        initActionBar();
+        initToolbar();
 
         initView();
 
@@ -62,10 +62,12 @@ public class MainActivity extends BasicActionBarActivity implements View.OnClick
         initListener();
     }
 
-    private void initActionBar(){
-        super.initActionBar(R.layout.actionbar_message_index);
-        View view = actionBar.getCustomView();
-        ((TextView)view.findViewById(R.id.textViewTitle)).setText(getResources().getText(R.string.app_title));
+    private void initToolbar(){
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        //toolbar.setTitle(getResources().getText(R.string.app_title));
+        ((TextView)(toolbar.findViewById(R.id.tv_title))).setText(R.string.app_title);
     }
 
     private void initView(){

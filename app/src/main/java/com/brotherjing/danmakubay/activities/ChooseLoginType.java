@@ -3,13 +3,14 @@ package com.brotherjing.danmakubay.activities;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 
 import com.brotherjing.danmakubay.GlobalEnv;
 import com.brotherjing.danmakubay.R;
 
-public class ChooseLoginType extends Activity {
+public class ChooseLoginType extends AppCompatActivity {
 
     private static int REQ_CODE_LOGIN = 1;
 

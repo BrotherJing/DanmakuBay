@@ -2,6 +2,7 @@ package com.brotherjing.danmakubay.activities;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,7 +22,7 @@ import com.brotherjing.danmakubay.utils.providers.AccountProvider;
 import com.google.gson.Gson;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
-public class AccountSettingsActivity extends BasicActionBarActivity {
+public class AccountSettingsActivity extends BaseActivity {
 
     public static int RES_CODE_LOGOUT = 2;
 
@@ -36,7 +37,9 @@ public class AccountSettingsActivity extends BasicActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account_settings);
 
-        initActionBar(R.layout.actionbar_with_title_back);
+        Toolbar toolbar = f(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         ivAvatar = f(R.id.iv_avatar);
         tvName = f(R.id.tv_username);
@@ -71,16 +74,16 @@ public class AccountSettingsActivity extends BasicActionBarActivity {
     }
 
     @Override
-    protected void initActionBar(int layoutId) {
-        super.initActionBar(layoutId);
-        View view = actionBar.getCustomView();
-        ((TextView)view.findViewById(R.id.textViewTitle)).setText(R.string.title_activity_account_settings);
-        view.findViewById(R.id.layout_actionbar_left).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            if (!super.onOptionsItemSelected(item)) {
+                //NavUtils.navigateUpFromSameTask(this);
                 finish();
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             }
-        });
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

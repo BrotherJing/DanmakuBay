@@ -1,6 +1,7 @@
 package com.brotherjing.danmakubay.activities;
 
-import android.app.Activity;
+import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
@@ -8,7 +9,7 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Created by jingyanga on 2016/9/1.
  */
-public class BaseActivity extends Activity {
+public class BaseActivity extends AppCompatActivity {
 
     private CompositeSubscription mCompositeSubscription;
 
@@ -33,6 +34,10 @@ public class BaseActivity extends Activity {
         if (this.mCompositeSubscription != null) {
             this.mCompositeSubscription.unsubscribe();
         }
+    }
+
+    protected  <T extends View>T f(int resId){
+        return (T)super.findViewById(resId);
     }
 
 }

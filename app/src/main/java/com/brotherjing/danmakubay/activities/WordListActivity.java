@@ -1,10 +1,8 @@
 package com.brotherjing.danmakubay.activities;
 
-import android.app.ActionBar;
-import android.app.Activity;
 import android.os.AsyncTask;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,7 +14,6 @@ import android.widget.TextView;
 import com.brotherjing.danmakubay.App;
 import com.brotherjing.danmakubay.R;
 import com.brotherjing.danmakubay.utils.SoundManager;
-import com.brotherjing.danmakubay.utils.ViewUtil;
 import com.brotherjing.danmakubay.utils.WordDBManager;
 import com.brotherjing.danmakubay.utils.views.UniversalAdapter;
 import com.brotherjing.danmakubay.utils.views.UniversalViewHolder;
@@ -24,7 +21,7 @@ import com.greendao.dao.Word;
 
 import java.util.List;
 
-public class WordListActivity extends Activity {
+public class WordListActivity extends BaseActivity {
 
     List<Word> wordList;
     WordDBManager wordDBManager;
@@ -37,7 +34,7 @@ public class WordListActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_word_list);
-        initActionBar();
+        initToolbar();
 
         SoundManager.prepare();
 
@@ -93,17 +90,10 @@ public class WordListActivity extends Activity {
         });
     }
 
-    private void initActionBar(){
-        ActionBar actionBar = getActionBar();
-        ViewUtil.customizeActionBar(actionBar, R.layout.actionbar_with_title_back);
-        View view = actionBar.getCustomView();
-        ((TextView)view.findViewById(R.id.textViewTitle)).setText(getResources().getText(R.string.word_list));
-        view.findViewById(R.id.layout_actionbar_left).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+    private void initToolbar(){
+        Toolbar toolbar = f(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     private void refresh(){
@@ -114,5 +104,15 @@ public class WordListActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         SoundManager.release();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if(id==android.R.id.home){
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
