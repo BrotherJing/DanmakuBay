@@ -67,10 +67,13 @@
 ##---------------End: proguard configuration for Gson  ----------
 
 # # -------------------------------------------
-# #  ######## greenDao?¨¬??  ##########
+# #  ######## greenDao?ï¿½ï¿½??  ##########
 # # -------------------------------------------
 -keep class de.greenrobot.dao.** {*;}
 -keep class com.greendao.dao.** {*;}
 -keepclassmembers class * extends de.greenrobot.dao.AbstractDao {
     public static java.lang.String TABLENAME;
 }
+
+-dontwarn com.tencent.bugly.**
+-keep public class com.tencent.bugly.**{*;}

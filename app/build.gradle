@@ -9,9 +9,13 @@ android {
         applicationId "com.brotherjing.danmakubay"
         minSdkVersion 15
         targetSdkVersion 19
-        versionCode 1
-        versionName "1.2"
+        versionCode 3
+        versionName "1.3"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        ndk {
+            // 设置支持的SO库架构
+            abiFilters 'armeabi' //, 'x86', 'armeabi-v7a', 'x86_64', 'arm64-v8a'
+        }
     }
 
     buildTypes {
@@ -77,11 +81,6 @@ dependencies {
 
     compile "com.squareup.retrofit:retrofit:$retrofit_version"
     compile "com.squareup.retrofit:converter-gson:$retrofit_version"
-    compile ('com.squareup.retrofit:converter-simplexml:2.0.0-beta2') {
-        exclude group: 'xpp3', module: 'xpp3'
-        exclude group: 'stax', module: 'stax-api'
-        exclude group: 'stax', module: 'stax'
-    }
     compile "com.squareup.retrofit:adapter-rxjava:$retrofit_version"
     compile "io.reactivex:rxjava:$rx_java_version"
     compile "io.reactivex:rxandroid:$rx_android_version"
@@ -89,4 +88,7 @@ dependencies {
     compile "com.squareup.okhttp:logging-interceptor:$okhttp_logging_version"
 
     compile "com.google.code.gson:gson:$gson_version"
+
+    compile 'com.tencent.bugly:crashreport:latest.release'
+    compile 'com.tencent.bugly:nativecrashreport:latest.release'
 }

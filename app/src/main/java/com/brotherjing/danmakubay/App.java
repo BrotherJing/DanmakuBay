@@ -6,6 +6,7 @@ import com.brotherjing.danmakubay.api.API_SPF;
 import com.brotherjing.danmakubay.utils.DataUtil;
 import com.brotherjing.danmakubay.utils.ImageUtil;
 import com.brotherjing.danmakubay.utils.WordDBManager;
+import com.tencent.bugly.crashreport.CrashReport;
 
 /**
  * Created by Brotherjing on 2015/8/15.
@@ -24,7 +25,7 @@ public final class App extends Application {
         ImageUtil.init(this);
         GlobalEnv.init();
         wordDBManager = new WordDBManager(this);
-        //CrashReport.initCrashReport(appContext, "900008968", false);
+        CrashReport.initCrashReport(appContext, "900008968", true);
 
         checkFirstUse();
     }
