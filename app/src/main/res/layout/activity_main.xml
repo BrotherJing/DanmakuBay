@@ -1,99 +1,31 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".MainActivity">
+    android:layout_height="match_parent" android:fitsSystemWindows="true"
+    tools:context=".activities.MainActivity">
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@color/app_color"
-        android:padding="20dp">
+    <android.support.design.widget.AppBarLayout android:layout_height="wrap_content"
+        android:layout_width="match_parent" android:theme="@style/AppTheme.AppBarOverlay">
 
-        <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_gravity="center_horizontal"
-            android:id="@+id/iv_avatar"
-            android:scaleType="fitCenter"
-            android:layout_marginBottom="6dp"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:textColor="@android:color/white"
-            android:id="@+id/tv_username"
-            android:textSize="16sp"/>
+        <android.support.v7.widget.Toolbar android:id="@+id/toolbar"
+            android:layout_width="match_parent" android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary" app:popupTheme="@style/AppTheme.PopupOverlay"
+            app:titleTextColor="@android:color/white">
 
-    </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:id="@+id/tv_title"
+                android:textColor="@android:color/white"
+                android:textSize="20sp"/>
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="20dp">
+        </android.support.v7.widget.Toolbar>
 
-        <TextView
-            android:id="@+id/tv_open_window"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/open_window"
-            style="@style/list_item_main"/>
+    </android.support.design.widget.AppBarLayout>
 
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="1dp"
-            android:background="@color/app_color_shallow"/>
+    <include layout="@layout/content_main" />
 
-        <TextView
-            android:id="@+id/tv_open_find_window"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/open_find_window"
-            style="@style/list_item_main"/>
-
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="1dp"
-            android:background="@color/app_color_shallow"/>
-
-        <TextView
-            android:id="@+id/tv_set_danmaku"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/set_danmaku"
-            style="@style/list_item_main"/>
-
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="1dp"
-            android:background="@color/app_color_shallow"
-            android:layout_marginBottom="40dp"/>
-
-        <TextView
-            android:id="@+id/tv_add_word"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/add_word"
-            style="@style/list_item_main"/>
-
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="1dp"
-            android:background="@color/app_color_shallow"/>
-
-        <TextView
-            android:id="@+id/tv_word_list"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/word_list"
-            style="@style/list_item_main"/>
-
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="1dp"
-            android:background="@color/app_color_shallow"/>
-    </LinearLayout>
-
-</LinearLayout>
+</android.support.design.widget.CoordinatorLayout>

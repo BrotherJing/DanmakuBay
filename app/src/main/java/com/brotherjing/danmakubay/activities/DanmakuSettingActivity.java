@@ -1,12 +1,10 @@
 package com.brotherjing.danmakubay.activities;
 
-import android.app.ActionBar;
-import android.app.Activity;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.view.Menu;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +14,6 @@ import android.widget.FrameLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
-import android.widget.TextView;
 
 import com.brotherjing.danmakubay.R;
 import com.brotherjing.danmakubay.api.API_SPF;
@@ -27,7 +24,7 @@ import com.brotherjing.simpledanmakuview.DanmakuView;
 
 import java.lang.ref.WeakReference;
 
-public class DanmakuSettingActivity extends Activity {
+public class DanmakuSettingActivity extends AppCompatActivity {
 
     private static final int MESSAGE_SEND = 1;
     private static final int MESSAGE_FINISH = 2;
@@ -51,7 +48,7 @@ public class DanmakuSettingActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_danmaku_setting);
-        initActionBar();
+        initToolbar();
         initView();
         initData();
         refreshView();
@@ -217,31 +214,19 @@ public class DanmakuSettingActivity extends Activity {
         });
     }
 
-    private void initActionBar(){
-        ActionBar actionBar = getActionBar();
-        ViewUtil.customizeActionBar(actionBar, R.layout.actionbar_with_title_back);
-        View view = actionBar.getCustomView();
-        ((TextView)view.findViewById(R.id.textViewTitle)).setText(getResources().getText(R.string.set_danmaku));
-        ((TextView)view.findViewById(R.id.textViewRight)).setText(getResources().getText(R.string.save));
-
-        view.findViewById(R.id.layout_actionbar_left).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-
-        view.findViewById(R.id.layout_actionbar_right).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DataUtil.putInt(API_SPF.SPF_SETTING,API_SPF.ITEM_DANMAKU_SPEED,speed);
-                DataUtil.putBoolean(API_SPF.SPF_SETTING, API_SPF.ITEM_DISPLAY_AREA, all_app);
-                DataUtil.putBoolean(API_SPF.SPF_SETTING, API_SPF.ITEM_SHOW_BG, show_bg);
-                DataUtil.putInt(API_SPF.SPF_SETTING, API_SPF.ITEM_TEXT_SIZE, text_size);
-                DataUtil.putInt(API_SPF.SPF_SETTING,API_SPF.ITEM_DANMAKU_SPEED_LEVEL,speed_level);
-                DataUtil.putInt(API_SPF.SPF_SETTING,API_SPF.ITEM_DANMAKU_HEIGHT,danmaku_height);
-                finish();
-            }
+    private void initToolbar(){
+        Toolbar toolbar = f(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setTitle(R.string.set_danmaku);
+        toolbar.findViewById(R.id.tv_title).setOnClickListener(view -> {
+            DataUtil.putInt(API_SPF.SPF_SETTING,API_SPF.ITEM_DANMAKU_SPEED,speed);
+            DataUtil.putBoolean(API_SPF.SPF_SETTING, API_SPF.ITEM_DISPLAY_AREA, all_app);
+            DataUtil.putBoolean(API_SPF.SPF_SETTING, API_SPF.ITEM_SHOW_BG, show_bg);
+            DataUtil.putInt(API_SPF.SPF_SETTING, API_SPF.ITEM_TEXT_SIZE, text_size);
+            DataUtil.putInt(API_SPF.SPF_SETTING,API_SPF.ITEM_DANMAKU_SPEED_LEVEL,speed_level);
+            DataUtil.putInt(API_SPF.SPF_SETTING,API_SPF.ITEM_DANMAKU_HEIGHT,danmaku_height);
+            finish();
         });
     }
 
@@ -253,7 +238,7 @@ public class DanmakuSettingActivity extends Activity {
         private WeakReference<DanmakuSettingActivity> reference;
 
         public MyHandler(DanmakuSettingActivity activity){
-            reference = new WeakReference<DanmakuSettingActivity>(activity);
+            reference = new WeakReference<>(activity);
         }
         @Override
         public void handleMessage(Message msg) {
@@ -265,5 +250,17 @@ public class DanmakuSettingActivity extends Activity {
                 sendEmptyMessageDelayed(MESSAGE_SEND, 500);
             }
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            if (!super.onOptionsItemSelected(item)) {
+                finish();
+            }
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

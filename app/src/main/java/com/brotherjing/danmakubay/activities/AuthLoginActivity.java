@@ -1,11 +1,10 @@
 package com.brotherjing.danmakubay.activities;
 
-import android.app.ActionBar;
-import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.WebSettings;
@@ -19,14 +18,13 @@ import com.brotherjing.danmakubay.api.API_SPF;
 import com.brotherjing.danmakubay.api.API_URL;
 import com.brotherjing.danmakubay.R;
 import com.brotherjing.danmakubay.utils.DataUtil;
-import com.brotherjing.danmakubay.utils.ViewUtil;
 import com.brotherjing.danmakubay.utils.beans.Account;
 import com.brotherjing.danmakubay.utils.network.ShanbayAPI;
 import com.brotherjing.danmakubay.utils.network.ShanbayClient;
 import com.google.gson.Gson;
 
 
-public class AuthLoginActivity extends Activity {
+public class AuthLoginActivity extends AppCompatActivity {
 
     private WebView webView;
     private String login_url;
@@ -41,7 +39,7 @@ public class AuthLoginActivity extends Activity {
         setContentView(R.layout.activity_auth_login);
         webView = (WebView)findViewById(R.id.webview_auth_login);
 
-        initActionBar();
+        initToolbar();
 
         login_once = false;
 
@@ -60,11 +58,11 @@ public class AuthLoginActivity extends Activity {
         webView.loadUrl(login_url);
     }
 
-    private void initActionBar(){
-        ActionBar actionBar = getActionBar();
-        ViewUtil.customizeActionBar(actionBar, R.layout.actionbar_message_index);
-        View view = actionBar.getCustomView();
-        ((TextView)view.findViewById(R.id.textViewTitle)).setText(getResources().getText(R.string.app_title));
+    private void initToolbar(){
+        Toolbar toolbar = f(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        ((TextView)toolbar.findViewById(R.id.tv_title)).setText(R.string.app_title);
     }
 
     private <T extends View>T f(int resId){

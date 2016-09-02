@@ -1,8 +1,10 @@
 package com.brotherjing.danmakubay.activities;
 
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
@@ -12,7 +14,6 @@ import android.widget.Toast;
 import com.brotherjing.danmakubay.App;
 import com.brotherjing.danmakubay.GlobalEnv;
 import com.brotherjing.danmakubay.R;
-import com.brotherjing.danmakubay.base.BasicActionBarActivity;
 import com.brotherjing.danmakubay.utils.SoundManager;
 import com.brotherjing.danmakubay.utils.TextUtil;
 import com.brotherjing.danmakubay.utils.WordDBManager;
@@ -31,9 +32,7 @@ import java.util.List;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class AddWordActivity extends BasicActionBarActivity {
-
-    private static final String TAG = "AddWordActivity";
+public class AddWordActivity extends BaseActivity {
 
     ShanbayProvider provider;
     WordDBManager wordDBManager;
@@ -48,7 +47,7 @@ public class AddWordActivity extends BasicActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_word);
-        initActionBar(R.layout.actionbar_with_title_back);
+        initToolbar();
         initView();
         initData();
     }
@@ -64,31 +63,17 @@ public class AddWordActivity extends BasicActionBarActivity {
         tvDesc.setVisibility(View.GONE);
         tvSentences.setVisibility(View.GONE);
 
-        tvSearch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (TextUtils.isEmpty(et.getText())) return;
-                //new SearchWordTask().execute(et.getText().toString());
+        tvSearch.setOnClickListener(v -> {
+            if (TextUtils.isEmpty(et.getText())) return;
+            searchWord(et.getText().toString());
+        });
+        btnAdd.setOnClickListener(v -> addWord());
+        et.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                if (TextUtils.isEmpty(et.getText())) return false;
                 searchWord(et.getText().toString());
             }
-        });
-        btnAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //new AddWordTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                addWord();
-            }
-        });
-        et.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    if (TextUtils.isEmpty(et.getText())) return false;
-                    //new SearchWordTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, et.getText().toString());
-                    searchWord(et.getText().toString());
-                }
-                return false;
-            }
+            return false;
         });
     }
 
@@ -209,17 +194,18 @@ public class AddWordActivity extends BasicActionBarActivity {
         }
     }
 
-    @Override
-    protected void initActionBar(int layoutId) {
-        super.initActionBar(layoutId);
-        View view = actionBar.getCustomView();
-        ((TextView)view.findViewById(R.id.textViewTitle)).setText(getResources().getText(R.string.add_word));
+    protected void initToolbar() {
+        Toolbar toolbar = f(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
 
-        view.findViewById(R.id.layout_actionbar_left).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId()==android.R.id.home){
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
