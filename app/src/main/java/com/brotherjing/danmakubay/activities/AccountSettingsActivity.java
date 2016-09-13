@@ -1,12 +1,9 @@
 package com.brotherjing.danmakubay.activities;
 
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -14,14 +11,13 @@ import android.widget.Toast;
 
 import com.brotherjing.danmakubay.R;
 import com.brotherjing.danmakubay.api.API_SPF;
-import com.brotherjing.danmakubay.base.BasicActionBarActivity;
 import com.brotherjing.danmakubay.utils.DataUtil;
-import com.brotherjing.danmakubay.utils.TextUtil;
 import com.brotherjing.danmakubay.utils.ViewUtil;
 import com.brotherjing.danmakubay.utils.beans.UserInfo;
+import com.brotherjing.danmakubay.utils.network.ShanbayClient;
 import com.brotherjing.danmakubay.utils.providers.AccountProvider;
+import com.brotherjing.danmakubay.utils.views.CircleTransformation;
 import com.google.gson.Gson;
-import com.nostra13.universalimageloader.core.ImageLoader;
 
 public class AccountSettingsActivity extends BaseActivity {
 
@@ -73,7 +69,9 @@ public class AccountSettingsActivity extends BaseActivity {
 
     private void refreshView(){
         tvName.setText(userInfo.getUsername());
-        ImageLoader.getInstance().displayImage(userInfo.getAvatar(), ivAvatar);
+        ShanbayClient.getPicasso().load(userInfo.getAvatar())
+                .transform(new CircleTransformation())
+                .into(ivAvatar);
         tvNickname.setText(userInfo.getNickname());
     }
 

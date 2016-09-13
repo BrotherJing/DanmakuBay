@@ -2,10 +2,13 @@ package com.brotherjing.danmakubay.utils.network;
 
 import android.text.TextUtils;
 
+import com.brotherjing.danmakubay.App;
 import com.brotherjing.danmakubay.api.API_SPF;
 import com.brotherjing.danmakubay.utils.DataUtil;
 import com.brotherjing.danmakubay.utils.beans.Account;
 import com.google.gson.Gson;
+import com.squareup.picasso.OkHttpDownloader;
+import com.squareup.picasso.Picasso;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -21,6 +24,7 @@ public class ShanbayClient {
 
     private static Account sAccount;
     private static ShanbayAPI shanbayAPI;
+    private static Picasso picasso;
 
     public static ShanbayAPI getInstance(Account account){
         if(shanbayAPI==null||!account.equals(sAccount)){
@@ -37,6 +41,7 @@ public class ShanbayClient {
     public static void setAccount(Account account){
         sAccount = account;
         shanbayAPI = null;
+        picasso = null;
     }
 
     public static ShanbayAPI getInstance(){
@@ -49,6 +54,15 @@ public class ShanbayClient {
             }
         }
         return getInstance(sAccount);
+    }
+
+    public static Picasso getPicasso(){
+        if(picasso==null){
+            picasso = new Picasso.Builder(App.getInstance())
+                    .downloader(new OkHttpDownloader(ShanbayHttpClient.getInstance(sAccount)))
+                    .build();
+        }
+        return picasso;
     }
 
     private static void createInstance(){

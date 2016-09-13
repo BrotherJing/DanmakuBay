@@ -4,7 +4,6 @@ import android.app.Application;
 
 import com.brotherjing.danmakubay.api.API_SPF;
 import com.brotherjing.danmakubay.utils.DataUtil;
-import com.brotherjing.danmakubay.utils.ImageUtil;
 import com.brotherjing.danmakubay.utils.WordDBManager;
 import com.tencent.bugly.crashreport.CrashReport;
 
@@ -22,7 +21,6 @@ public final class App extends Application {
         appContext = this;
 
         DataUtil.init(this);
-        ImageUtil.init(this);
         GlobalEnv.init();
         wordDBManager = new WordDBManager(this);
         CrashReport.initCrashReport(appContext, "900008968", true);
