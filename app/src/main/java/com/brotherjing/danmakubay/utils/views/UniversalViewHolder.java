@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
+import com.brotherjing.danmakubay.utils.network.ShanbayClient;
 
 /**
  * Created by ljj on 2015/3/7.
@@ -77,7 +77,7 @@ public class UniversalViewHolder {
     //ImageView
     public UniversalViewHolder setImageUrl(int viewId, String url){
         ImageView imageView = getView(viewId);
-        ImageLoader.getInstance().displayImage(url,imageView);
+        ShanbayClient.getPicasso().load(url).into(imageView);
         return this;
     }
 

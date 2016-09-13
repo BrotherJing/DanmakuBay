@@ -2,7 +2,6 @@ package com.brotherjing.danmakubay.activities;
 
 import android.app.ActivityManager;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -18,13 +17,12 @@ import com.brotherjing.danmakubay.services.FloatToolService;
 import com.brotherjing.danmakubay.services.FloatWindowService;
 import com.brotherjing.danmakubay.utils.CheckNetwork;
 import com.brotherjing.danmakubay.utils.DataUtil;
+import com.brotherjing.danmakubay.utils.ViewUtil;
 import com.brotherjing.danmakubay.utils.beans.UserInfo;
 import com.brotherjing.danmakubay.utils.network.BaseSubscriber;
 import com.brotherjing.danmakubay.utils.network.ShanbayClient;
+import com.brotherjing.danmakubay.utils.views.CircleTransformation;
 import com.google.gson.Gson;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
-import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 import java.util.List;
 
@@ -68,6 +66,7 @@ public class MainActivity extends BasicActionBarActivity implements View.OnClick
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         //toolbar.setTitle(getResources().getText(R.string.app_title));
         ((TextView)(toolbar.findViewById(R.id.tv_title))).setText(R.string.app_title);
+        ViewUtil.initStatusBar(this);
     }
 
     private void initView(){
@@ -120,7 +119,10 @@ public class MainActivity extends BasicActionBarActivity implements View.OnClick
     private void refreshView(){
         if(GlobalEnv.isLogin()) {
             tvName.setText(userInfo.getUsername());
-            ImageLoader.getInstance().displayImage(userInfo.getAvatar(), ivAvatar, new AnimateListener());
+            ShanbayClient.getPicasso()
+                    .load(userInfo.getAvatar())
+                    .transform(new CircleTransformation())
+                    .into(ivAvatar);
         }else{
             ivAvatar.setImageBitmap(null);
             tvName.setText(R.string.not_login);
@@ -219,16 +221,5 @@ public class MainActivity extends BasicActionBarActivity implements View.OnClick
                     Toast.makeText(MainActivity.this,R.string.not_login,Toast.LENGTH_SHORT).show();
                 }
             }));
-    }
-
-    private static class AnimateListener extends SimpleImageLoadingListener {
-
-        @Override
-        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-            if (loadedImage != null) {
-                ImageView imageView = (ImageView) view;
-                    FadeInBitmapDisplayer.animate(imageView, 500);
-            }
-        }
     }
 }

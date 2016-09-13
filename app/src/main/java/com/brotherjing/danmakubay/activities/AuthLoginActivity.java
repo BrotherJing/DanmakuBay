@@ -15,9 +15,9 @@ import android.widget.Toast;
 
 import com.brotherjing.danmakubay.GlobalEnv;
 import com.brotherjing.danmakubay.api.API_SPF;
-import com.brotherjing.danmakubay.api.API_URL;
 import com.brotherjing.danmakubay.R;
 import com.brotherjing.danmakubay.utils.DataUtil;
+import com.brotherjing.danmakubay.utils.ViewUtil;
 import com.brotherjing.danmakubay.utils.beans.Account;
 import com.brotherjing.danmakubay.utils.network.ShanbayAPI;
 import com.brotherjing.danmakubay.utils.network.ShanbayClient;
@@ -63,6 +63,7 @@ public class AuthLoginActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         ((TextView)toolbar.findViewById(R.id.tv_title)).setText(R.string.app_title);
+        ViewUtil.initStatusBar(this);
     }
 
     private <T extends View>T f(int resId){
@@ -79,11 +80,11 @@ public class AuthLoginActivity extends AppCompatActivity {
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
             if(login_once)finish();
-            if(url.endsWith(API_URL.SUFFIX_DENIED)){
+            if(url.endsWith(ShanbayAPI.SUFFIX_DENIED)){
                 Toast.makeText(AuthLoginActivity.this,R.string.login_cancel,Toast.LENGTH_SHORT).show();
                 finish();
             }
-            else if(url.startsWith(API_URL.URL_CALLBACK)){
+            else if(url.startsWith(ShanbayAPI.URL_CALLBACK)){
                 login_once = true;
                 String args = url.split("#")[1];
                 if(args.startsWith("access_token")) {

@@ -1,12 +1,9 @@
 package com.brotherjing.danmakubay.activities;
 
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -14,13 +11,13 @@ import android.widget.Toast;
 
 import com.brotherjing.danmakubay.R;
 import com.brotherjing.danmakubay.api.API_SPF;
-import com.brotherjing.danmakubay.base.BasicActionBarActivity;
 import com.brotherjing.danmakubay.utils.DataUtil;
-import com.brotherjing.danmakubay.utils.TextUtil;
+import com.brotherjing.danmakubay.utils.ViewUtil;
 import com.brotherjing.danmakubay.utils.beans.UserInfo;
+import com.brotherjing.danmakubay.utils.network.ShanbayClient;
 import com.brotherjing.danmakubay.utils.providers.AccountProvider;
+import com.brotherjing.danmakubay.utils.views.CircleTransformation;
 import com.google.gson.Gson;
-import com.nostra13.universalimageloader.core.ImageLoader;
 
 public class AccountSettingsActivity extends BaseActivity {
 
@@ -37,9 +34,7 @@ public class AccountSettingsActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account_settings);
 
-        Toolbar toolbar = f(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        initToolbar();
 
         ivAvatar = f(R.id.iv_avatar);
         tvName = f(R.id.tv_username);
@@ -48,16 +43,21 @@ public class AccountSettingsActivity extends BaseActivity {
 
         initData();
 
-        btnLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AccountProvider.logout();
-                Toast.makeText(AccountSettingsActivity.this,R.string.logout,Toast.LENGTH_SHORT).show();
-                setResult(RES_CODE_LOGOUT);
-                finish();
-                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-            }
+        btnLogout.setOnClickListener(v -> {
+            AccountProvider.logout();
+            Toast.makeText(AccountSettingsActivity.this,R.string.logout,Toast.LENGTH_SHORT).show();
+            setResult(RES_CODE_LOGOUT);
+            finish();
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         });
+    }
+
+    private void initToolbar(){
+        Toolbar toolbar = f(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        ViewUtil.initStatusBar(this);
     }
 
     private void initData(){
@@ -69,7 +69,9 @@ public class AccountSettingsActivity extends BaseActivity {
 
     private void refreshView(){
         tvName.setText(userInfo.getUsername());
-        ImageLoader.getInstance().displayImage(userInfo.getAvatar(), ivAvatar);
+        ShanbayClient.getPicasso().load(userInfo.getAvatar())
+                .transform(new CircleTransformation())
+                .into(ivAvatar);
         tvNickname.setText(userInfo.getNickname());
     }
 
@@ -78,7 +80,6 @@ public class AccountSettingsActivity extends BaseActivity {
         int id = item.getItemId();
         if (id == android.R.id.home) {
             if (!super.onOptionsItemSelected(item)) {
-                //NavUtils.navigateUpFromSameTask(this);
                 finish();
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             }
