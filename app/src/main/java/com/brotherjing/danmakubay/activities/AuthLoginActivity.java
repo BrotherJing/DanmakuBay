@@ -63,7 +63,6 @@ public class AuthLoginActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         ((TextView)toolbar.findViewById(R.id.tv_title)).setText(R.string.app_title);
-
         ViewUtil.initStatusBar(this);
     }
 

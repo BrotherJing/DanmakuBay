@@ -62,6 +62,7 @@ dependencies {
     compile 'com.android.support:support-v4:24.0.0'
     compile 'com.android.support:appcompat-v7:24.0.0'
     compile 'com.android.support:design:24.0.0'
+
     compile 'com.readystatesoftware.systembartint:systembartint:1.0.3'
 
     compile 'com.brotherjing:danmakuview:1.1.1'

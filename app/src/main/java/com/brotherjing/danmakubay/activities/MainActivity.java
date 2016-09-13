@@ -66,7 +66,6 @@ public class MainActivity extends BasicActionBarActivity implements View.OnClick
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         //toolbar.setTitle(getResources().getText(R.string.app_title));
         ((TextView)(toolbar.findViewById(R.id.tv_title))).setText(R.string.app_title);
-
         ViewUtil.initStatusBar(this);
     }
 
