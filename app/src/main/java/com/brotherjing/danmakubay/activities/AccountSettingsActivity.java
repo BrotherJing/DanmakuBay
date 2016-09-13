@@ -17,6 +17,7 @@ import com.brotherjing.danmakubay.api.API_SPF;
 import com.brotherjing.danmakubay.base.BasicActionBarActivity;
 import com.brotherjing.danmakubay.utils.DataUtil;
 import com.brotherjing.danmakubay.utils.TextUtil;
+import com.brotherjing.danmakubay.utils.ViewUtil;
 import com.brotherjing.danmakubay.utils.beans.UserInfo;
 import com.brotherjing.danmakubay.utils.providers.AccountProvider;
 import com.google.gson.Gson;
@@ -37,9 +38,7 @@ public class AccountSettingsActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account_settings);
 
-        Toolbar toolbar = f(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        initToolbar();
 
         ivAvatar = f(R.id.iv_avatar);
         tvName = f(R.id.tv_username);
@@ -48,16 +47,21 @@ public class AccountSettingsActivity extends BaseActivity {
 
         initData();
 
-        btnLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AccountProvider.logout();
-                Toast.makeText(AccountSettingsActivity.this,R.string.logout,Toast.LENGTH_SHORT).show();
-                setResult(RES_CODE_LOGOUT);
-                finish();
-                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-            }
+        btnLogout.setOnClickListener(v -> {
+            AccountProvider.logout();
+            Toast.makeText(AccountSettingsActivity.this,R.string.logout,Toast.LENGTH_SHORT).show();
+            setResult(RES_CODE_LOGOUT);
+            finish();
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         });
+    }
+
+    private void initToolbar(){
+        Toolbar toolbar = f(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        ViewUtil.initStatusBar(this);
     }
 
     private void initData(){
@@ -78,7 +82,6 @@ public class AccountSettingsActivity extends BaseActivity {
         int id = item.getItemId();
         if (id == android.R.id.home) {
             if (!super.onOptionsItemSelected(item)) {
-                //NavUtils.navigateUpFromSameTask(this);
                 finish();
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             }

@@ -18,6 +18,7 @@ import com.brotherjing.danmakubay.api.API_SPF;
 import com.brotherjing.danmakubay.api.API_URL;
 import com.brotherjing.danmakubay.R;
 import com.brotherjing.danmakubay.utils.DataUtil;
+import com.brotherjing.danmakubay.utils.ViewUtil;
 import com.brotherjing.danmakubay.utils.beans.Account;
 import com.brotherjing.danmakubay.utils.network.ShanbayAPI;
 import com.brotherjing.danmakubay.utils.network.ShanbayClient;
@@ -63,6 +64,8 @@ public class AuthLoginActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         ((TextView)toolbar.findViewById(R.id.tv_title)).setText(R.string.app_title);
+
+        ViewUtil.initStatusBar(this);
     }
 
     private <T extends View>T f(int resId){

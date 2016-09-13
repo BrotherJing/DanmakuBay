@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.brotherjing.danmakubay.App;
 import com.brotherjing.danmakubay.R;
 import com.brotherjing.danmakubay.utils.SoundManager;
+import com.brotherjing.danmakubay.utils.ViewUtil;
 import com.brotherjing.danmakubay.utils.WordDBManager;
 import com.brotherjing.danmakubay.utils.views.UniversalAdapter;
 import com.brotherjing.danmakubay.utils.views.UniversalViewHolder;
@@ -94,6 +95,7 @@ public class WordListActivity extends BaseActivity {
         Toolbar toolbar = f(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ViewUtil.initStatusBar(this);
     }
 
     private void refresh(){

@@ -173,43 +173,34 @@ public class DanmakuSettingActivity extends AppCompatActivity {
             }
         });
 
-        rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if (checkedId == rb1.getId()) all_app = false;
-                else if (checkedId == rb2.getId()) all_app = true;
+        rg.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == rb1.getId()) all_app = false;
+            else if (checkedId == rb2.getId()) all_app = true;
+        });
+
+        rg_speed.setOnCheckedChangeListener((group, checkedId) -> {
+            if(checkedId==rb01.getId()){
+                speed_level = API_SPF.SPEED_LEVEL_SLOW;
+                danmakuSpeed = Danmaku.DanmakuSpeed.SLOW;
+            }
+            else if(checkedId==rb02.getId()){
+                speed_level = API_SPF.SPEED_LEVEL_NORMAL;
+                danmakuSpeed = Danmaku.DanmakuSpeed.NORMAL;
+            }
+            else if(checkedId==rb03.getId()){
+                speed_level = API_SPF.SPEED_LEVEL_FAST;
+                danmakuSpeed = Danmaku.DanmakuSpeed.FAST;
             }
         });
 
-        rg_speed.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if(checkedId==rb01.getId()){
-                    speed_level = API_SPF.SPEED_LEVEL_SLOW;
-                    danmakuSpeed = Danmaku.DanmakuSpeed.SLOW;
-                }
-                else if(checkedId==rb02.getId()){
-                    speed_level = API_SPF.SPEED_LEVEL_NORMAL;
-                    danmakuSpeed = Danmaku.DanmakuSpeed.NORMAL;
-                }
-                else if(checkedId==rb03.getId()){
-                    speed_level = API_SPF.SPEED_LEVEL_FAST;
-                    danmakuSpeed = Danmaku.DanmakuSpeed.FAST;
-                }
+        cb.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if(isChecked){
+                show_bg = true;
+                background.setVisibility(View.VISIBLE);
             }
-        });
-
-        cb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
-                    show_bg = true;
-                    background.setVisibility(View.VISIBLE);
-                }
-                else {
-                    show_bg = false;
-                    background.setVisibility(View.GONE);
-                }
+            else {
+                show_bg = false;
+                background.setVisibility(View.GONE);
             }
         });
     }
@@ -228,6 +219,7 @@ public class DanmakuSettingActivity extends AppCompatActivity {
             DataUtil.putInt(API_SPF.SPF_SETTING,API_SPF.ITEM_DANMAKU_HEIGHT,danmaku_height);
             finish();
         });
+        ViewUtil.initStatusBar(this);
     }
 
     private <T extends View>T f(int resId){

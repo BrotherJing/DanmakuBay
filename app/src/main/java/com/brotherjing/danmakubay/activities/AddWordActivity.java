@@ -16,6 +16,7 @@ import com.brotherjing.danmakubay.GlobalEnv;
 import com.brotherjing.danmakubay.R;
 import com.brotherjing.danmakubay.utils.SoundManager;
 import com.brotherjing.danmakubay.utils.TextUtil;
+import com.brotherjing.danmakubay.utils.ViewUtil;
 import com.brotherjing.danmakubay.utils.WordDBManager;
 import com.brotherjing.danmakubay.utils.beans.SentenceBean;
 import com.brotherjing.danmakubay.utils.beans.SentenceResponse;
@@ -198,6 +199,7 @@ public class AddWordActivity extends BaseActivity {
         Toolbar toolbar = f(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ViewUtil.initStatusBar(this);
     }
 
     @Override

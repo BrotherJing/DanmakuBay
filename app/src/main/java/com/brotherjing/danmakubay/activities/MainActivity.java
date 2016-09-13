@@ -2,10 +2,14 @@ package com.brotherjing.danmakubay.activities;
 
 import android.app.ActivityManager;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,6 +22,7 @@ import com.brotherjing.danmakubay.services.FloatToolService;
 import com.brotherjing.danmakubay.services.FloatWindowService;
 import com.brotherjing.danmakubay.utils.CheckNetwork;
 import com.brotherjing.danmakubay.utils.DataUtil;
+import com.brotherjing.danmakubay.utils.ViewUtil;
 import com.brotherjing.danmakubay.utils.beans.UserInfo;
 import com.brotherjing.danmakubay.utils.network.BaseSubscriber;
 import com.brotherjing.danmakubay.utils.network.ShanbayClient;
@@ -25,6 +30,7 @@ import com.google.gson.Gson;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
+import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import java.util.List;
 
@@ -68,6 +74,8 @@ public class MainActivity extends BasicActionBarActivity implements View.OnClick
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         //toolbar.setTitle(getResources().getText(R.string.app_title));
         ((TextView)(toolbar.findViewById(R.id.tv_title))).setText(R.string.app_title);
+
+        ViewUtil.initStatusBar(this);
     }
 
     private void initView(){
